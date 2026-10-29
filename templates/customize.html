@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Customize Player | PitchPro</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/app-theme.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/quote-card.css') }}">
+  <style>
+:root{--bg:#0A0A0A;--card:#141414;--lime:#A3FF12;--text:#F5F5F5;--muted:#A1A1AA;}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:radial-gradient(circle at top left,rgba(163,255,18,.08),transparent 30%),var(--bg);font-family:Inter,sans-serif;color:var(--text);padding:40px}
+.container{max-width:1200px;margin:auto}
+.back{display:inline-block;margin-bottom:25px;text-decoration:none;color:var(--lime);font-weight:600}
+h1{font-family:"Space Grotesk",sans-serif;font-size:3rem;margin-bottom:35px}
+h1 span{color:var(--lime)}
+.layout{display:grid;grid-template-columns:340px 1fr;gap:35px}
+.preview,.form{background:rgba(20,20,20,.95);border:1px solid rgba(255,255,255,.08);border-radius:28px;padding:30px}
+.preview{text-align:center}
+.avatar{width:170px;height:170px;margin:auto;border-radius:50%;background:linear-gradient(135deg,#A3FF12,#5EEAD4);display:flex;justify-content:center;align-items:center;font-size:4rem;color:#000;font-weight:700;margin-bottom:25px}
+.preview p{color:var(--muted);margin:4px 0}
+input[type=file]{margin-top:20px;width:100%}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:22px}
+.field{display:flex;flex-direction:column}
+label{margin-bottom:8px;font-weight:600}
+input,select{padding:15px;background:#1C1C1C;border:1px solid #333;border-radius:14px;color:#fff}
+.save{margin-top:35px;width:100%;padding:18px;border:none;border-radius:999px;background:var(--lime);color:#000;font-weight:700;cursor:pointer}
+@media(max-width:900px){.layout,.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="container">
+<a href="/dashboard" class="back">← Back to Dashboard</a>
+<h1>Customize <span>Your Player</span></h1>
+<div class="layout">
+<div class="preview">
+<div class="avatar" id="avatarPreview">A</div>
+<h2 id="previewName">Your Name</h2>
+<p id="previewPosition">Striker</p>
+<p>#<span id="previewNumber">10</span></p>
+<label for="photo" style="display:inline-block;margin-top:4px;padding:11px 16px;border-radius:999px;background:#202a16;color:var(--lime);font-weight:700;cursor:pointer;font-size:.9rem">Choose profile photo</label>
+<input type="file" id="photo" accept="image/*" style="display:none">
+</div>
+
+<div class="form">
+<div class="grid">
+
+<div class="field"><label>First Name</label><input id="firstName" type="text"></div>
+<div class="field"><label>Last Name</label><input id="lastName" type="text"></div>
+
+<div class="field" style="grid-column:1 / span 2;">
+<label>Bio</label>
+<input id="bio" type="text" maxlength="100" placeholder="Tell us about yourself">
+</div>
+
+<div class="field"><label>Jersey Number</label><input id="number" type="number" min="1" max="99"></div>
+
+<div class="field">
+<label>Position</label>
+<select id="position">
+<option>Striker</option>
+<option>Winger</option>
+<option>Midfielder</option>
+<option>Defender</option>
+<option>Goalkeeper</option>
+</select>
+</div>
+
+<div class="field">
+<label>Preferred Foot</label>
+<select id="foot">
+<option>Right</option>
+<option>Left</option>
+<option>Both</option>
+</select>
+</div>
+
+<div class="field"><label>Favorite Club</label><input id="club" type="text"></div>
+
+<div class="field"><label>Favorite Player</label><input id="player" type="text"></div>
+
+<div class="field" style="grid-column:1 / span 2;margin-top:8px"><label style="color:var(--lime)">Match Stats <span style="color:var(--muted);font-size:.75rem;font-weight:400">(optional — used for your player rating)</span></label></div>
+<div class="field"><label>Matches Played</label><input id="matchesPlayed" type="number" min="0" max="1000" value="0"></div>
+<div class="field"><label>Minutes Played</label><input id="minutesPlayed" type="number" min="0" max="100000" value="0"></div>
+<div class="field"><label>Goals</label><input id="goals" type="number" min="0" max="1000" value="0"></div>
+<div class="field"><label>Assists</label><input id="assists" type="number" min="0" max="1000" value="0"></div>
+<div class="field"><label>Pass Accuracy (%)</label><input id="passAccuracy" type="number" min="0" max="100" value="0"></div>
+<div class="field"><label>Successful Dribbles</label><input id="successfulDribbles" type="number" min="0" max="10000" value="0"></div>
+<div class="field"><label>Tackles Won</label><input id="tacklesWon" type="number" min="0" max="10000" value="0"></div>
+<div class="field"><label>Interceptions</label><input id="interceptions" type="number" min="0" max="10000" value="0"></div>
+
+</div>
+
+<button class="save" type = "button">Save Changes</button>
+
+</div>
+</div>
+</div>
+
+<script type="module" src="{{url_for('static', filename = 'js/customize.js')}}"></script>
+  <script src="{{ url_for('static', filename='js/motivational-quotes.js') }}"></script>
+</body>
+</html>

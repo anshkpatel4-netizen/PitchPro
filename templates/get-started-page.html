@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Get Started | PitchPro</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/public-polish.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/quote-card.css') }}">
+  <style>
+    :root {
+      --bg: #0A0A0A;
+      --card: #141414;
+      --lime: #A3FF12;
+      --text: #F5F5F5;
+      --muted: #A1A1AA;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      overflow-x: hidden;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    h1,h2,h3,h4 {
+      font-family: 'Space Grotesk', sans-serif;
+      letter-spacing: -0.5px;
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    section {
+      padding: 7rem 8vw;
+    }
+
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.2rem 8vw;
+      background: rgba(10,10,10,0.88);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .logo {
+      color: var(--lime);
+      font-size: 1.5rem;
+      font-weight: 700;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      font-weight: 600;
+    }
+
+    .nav-links a {
+      position: relative;
+      color: var(--muted);
+      padding-bottom: 6px;
+      transition: color .3s ease;
+    }
+
+    .nav-links a::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      width: 100%;
+      height: 2px;
+      background: linear-gradient(90deg, var(--lime), #5EEAD4);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform .3s ease;
+    }
+
+    .nav-links a:hover {
+      color: var(--lime);
+    }
+
+    .nav-links a:hover::after {
+      transform: scaleX(1);
+    }
+
+    .hero {
+      min-height: 82vh;
+      display: grid;
+      grid-template-columns: 1.1fr 1fr;
+      gap: 4rem;
+      align-items: center;
+    }
+
+    .hero h1 {
+      font-size: clamp(3rem, 7vw, 6rem);
+      line-height: 0.95;
+      margin-bottom: 1.5rem;
+    }
+
+    .hero h1 span {
+      color: var(--lime);
+    }
+
+    .hero p {
+      color: var(--muted);
+      line-height: 1.8;
+      max-width: 620px;
+      margin-bottom: 2rem;
+    }
+
+    .cta {
+      display: inline-block;
+      background: var(--lime);
+      color: #000;
+      padding: 1rem 2rem;
+      border-radius: 999px;
+      font-weight: 700;
+      transition: all .25s ease;
+    }
+
+    .cta:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 30px rgba(163,255,18,0.35);
+    }
+
+    .hero-card {
+      background: linear-gradient(145deg, rgba(163,255,18,0.12), rgba(255,255,255,0.02));
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 28px;
+      padding: 3rem;
+      box-shadow: 0 30px 60px rgba(0,0,0,0.45);
+    }
+
+    .hero-card h3 {
+      color: var(--lime);
+      margin-bottom: 1rem;
+      font-size: 1.5rem;
+    }
+
+    .hero-card p {
+      color: var(--muted);
+      margin-bottom: 1rem;
+    }
+
+    .section-header {
+      margin-bottom: 4rem;
+      max-width: 760px;
+    }
+
+    .section-header h2 {
+      font-size: clamp(2.3rem, 5vw, 4rem);
+      margin-bottom: 1rem;
+    }
+
+    .section-header p {
+      color: var(--muted);
+      line-height: 1.8;
+    }
+
+    .steps-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 2rem;
+    }
+
+    .step-card {
+      background: var(--card);
+      border-radius: 24px;
+      padding: 2.5rem;
+      border: 1px solid rgba(255,255,255,0.06);
+      transition: transform .25s ease, border-color .25s ease, box-shadow .25s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .step-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at top right, rgba(163,255,18,0.12), transparent 45%);
+      pointer-events: none;
+    }
+
+    .step-card:hover {
+      transform: translateY(-8px);
+      border-color: rgba(163,255,18,0.35);
+      box-shadow: 0 0 0 1px rgba(163,255,18,0.12), 0 18px 40px rgba(163,255,18,0.14);
+    }
+
+    .step-number {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: rgba(163,255,18,0.14);
+      color: var(--lime);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      margin-bottom: 1.5rem;
+    }
+
+    .step-card h3 {
+      color: var(--lime);
+      margin-bottom: 1rem;
+      font-size: 1.5rem;
+    }
+
+    .step-card p {
+      color: var(--muted);
+      line-height: 1.8;
+    }
+
+    .pathway {
+      margin-top: 5rem;
+      display: grid;
+      gap: 1.5rem;
+    }
+
+    .pathway-card {
+      background: var(--card);
+      border-left: 4px solid var(--lime);
+      padding: 2rem;
+      border-radius: 0 20px 20px 0;
+    }
+
+    .pathway-card h4 {
+      margin-bottom: 0.7rem;
+      font-size: 1.25rem;
+    }
+
+    .pathway-card p {
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    .signup-box {
+      background: linear-gradient(145deg, rgba(163,255,18,0.12), rgba(255,255,255,0.02));
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 32px;
+      padding: 4rem;
+      max-width: 900px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .signup-box h2 {
+      font-size: clamp(2.5rem, 5vw, 4.5rem);
+      margin-bottom: 1rem;
+    }
+
+    .signup-box h2 span {
+      color: var(--lime);
+    }
+
+    .signup-box p {
+      color: var(--muted);
+      line-height: 1.8;
+      margin-bottom: 2rem;
+    }
+
+    .buttons {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .secondary-btn {
+      border: 1px solid rgba(255,255,255,0.1);
+      color: var(--text);
+      padding: 1rem 2rem;
+      border-radius: 999px;
+      transition: all .25s ease;
+    }
+
+    .secondary-btn:hover {
+      border-color: var(--lime);
+      color: var(--lime);
+    }
+
+    footer {
+      border-top: 1px solid rgba(255,255,255,0.08);
+      padding: 3rem 8vw;
+      text-align: center;
+      color: var(--muted);
+      margin-top: 6rem;
+    }
+
+    @media (max-width: 900px) {
+      .hero {
+        grid-template-columns: 1fr;
+      }
+
+      .hero h1 {
+        font-size: 3.8rem;
+      }
+
+      section {
+        padding: 5rem 7vw;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="logo">PitchPro</div>
+
+  <div class="nav-links">
+    <a href="#steps">steps</a>
+    <a href="#pathway">pathway</a>
+    <a href="#join">join</a>
+  </div>
+</nav>
+
+<section class="hero">
+  <div>
+    <h1>Start your <span>development journey.</span></h1>
+
+    <p>
+      PitchPro helps players improve through structured development, smart training, and long-term growth focused on real performance.
+    </p>
+
+    <a href="#join" class="cta">Get Started</a>
+  </div>
+
+  <div class="hero-card">
+    <h3>What you’ll gain</h3>
+
+    <p>→ Structured training progression</p>
+    <p>→ Technical development systems</p>
+    <p>→ Match awareness & decision-making</p>
+    <p>→ Confidence under pressure</p>
+    <p>→ Elite-level habits & discipline</p>
+    <p>→ Long-term player growth</p>
+  </div>
+</section>
+
+<section id="steps">
+  <div class="section-header">
+    <h2>How it works</h2>
+
+    <p>
+      PitchPro is designed to guide players through every stage of development with structure, consistency, and purpose.
+    </p>
+  </div>
+
+  <div class="steps-grid">
+
+    <div class="step-card">
+      <div class="step-number">1</div>
+      <h3>Choose your level</h3>
+      <p>
+        Find the development stage that matches your current age, ability, and training goals.
+      </p>
+    </div>
+
+    <div class="step-card">
+      <div class="step-number">2</div>
+      <h3>Follow the programs</h3>
+      <p>
+        Train using structured drills, technical exercises, and game-realistic development sessions.
+      </p>
+    </div>
+
+    <div class="step-card">
+      <div class="step-number">3</div>
+      <h3>Build habits</h3>
+      <p>
+        Improve consistency, discipline, confidence, and understanding of the game over time.
+      </p>
+    </div>
+
+  </div>
+
+  <div id="pathway" class="pathway">
+
+    <div class="pathway-card">
+      <h4>Foundation Phase</h4>
+      <p>
+        Young players focus on confidence, ball mastery, movement, and enjoying the game.
+      </p>
+    </div>
+
+    <div class="pathway-card">
+      <h4>Competitive Development</h4>
+      <p>
+        Players improve decision-making, scanning, tactical understanding, and speed of play.
+      </p>
+    </div>
+
+    <div class="pathway-card">
+      <h4>Elite Performance</h4>
+      <p>
+        Advanced athletes focus on composure, consistency, leadership, and long-term performance.
+      </p>
+    </div>
+
+  </div>
+</section>
+
+<section id="join">
+  <div class="signup-box">
+    <h2>Ready to <span>improve?</span></h2>
+
+    <p>
+      Start building confidence, technique, awareness, and elite habits through structured player development.
+    </p>
+
+    <div class="buttons">
+      <a href="#" class="cta">Create Account</a>
+      <a href="#" class="secondary-btn">Explore Programs</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  PitchPro — Start Your Journey ⚽
+</footer>
+
+  <script src="{{ url_for('static', filename='js/public-polish.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/motivational-quotes.js') }}"></script>
+</body>
+</html>

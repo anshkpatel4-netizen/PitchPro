@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PitchPro Tips</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/public-polish.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/quote-card.css') }}">
+  <style>
+    :root {
+      --bg: #0A0A0A;
+      --card: #141414;
+      --lime: #A3FF12;
+      --text: #F5F5F5;
+      --muted: #A1A1AA;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      overflow-x: hidden;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    h1,h2,h3,h4 {
+      font-family: 'Space Grotesk', sans-serif;
+      letter-spacing: -0.5px;
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    section {
+      padding: 7rem 8vw;
+    }
+
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.2rem 8vw;
+      background: rgba(10,10,10,0.88);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .logo {
+      color: var(--lime);
+      font-size: 1.5rem;
+      font-weight: 700;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      font-weight: 600;
+    }
+
+    .nav-links a {
+      position: relative;
+      color: var(--muted);
+      padding-bottom: 6px;
+      transition: color .3s ease;
+    }
+
+    .nav-links a::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      width: 100%;
+      height: 2px;
+      background: linear-gradient(90deg, var(--lime), #5EEAD4);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform .3s ease;
+    }
+
+    .nav-links a:hover {
+      color: var(--lime);
+    }
+
+    .nav-links a:hover::after {
+      transform: scaleX(1);
+    }
+
+    .hero {
+      min-height: 82vh;
+      display: grid;
+      grid-template-columns: 1.1fr 1fr;
+      gap: 4rem;
+      align-items: center;
+    }
+
+    .hero h1 {
+      font-size: clamp(3rem, 7vw, 6rem);
+      line-height: 0.95;
+      margin-bottom: 1.5rem;
+    }
+
+    .hero h1 span {
+      color: var(--lime);
+    }
+
+    .hero p {
+      color: var(--muted);
+      line-height: 1.8;
+      max-width: 620px;
+      margin-bottom: 2rem;
+    }
+
+    .cta {
+      display: inline-block;
+      background: var(--lime);
+      color: #000;
+      padding: 1rem 2rem;
+      border-radius: 999px;
+      font-weight: 700;
+      transition: all .25s ease;
+    }
+
+    .cta:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 30px rgba(163,255,18,0.35);
+    }
+
+    .hero-card {
+      background: linear-gradient(145deg, rgba(163,255,18,0.12), rgba(255,255,255,0.02));
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 28px;
+      padding: 3rem;
+      box-shadow: 0 30px 60px rgba(0,0,0,0.45);
+    }
+
+    .hero-card h3 {
+      color: var(--lime);
+      margin-bottom: 1rem;
+      font-size: 1.5rem;
+    }
+
+    .hero-card p {
+      color: var(--muted);
+      margin-bottom: 1rem;
+    }
+
+    .section-header {
+      margin-bottom: 4rem;
+      max-width: 760px;
+    }
+
+    .section-header h2 {
+      font-size: clamp(2.3rem, 5vw, 4rem);
+      margin-bottom: 1rem;
+    }
+
+    .section-header p {
+      color: var(--muted);
+      line-height: 1.8;
+    }
+
+    .tips-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 2rem;
+    }
+
+    .tip-card {
+      background: var(--card);
+      border-radius: 24px;
+      padding: 2.4rem;
+      border: 1px solid rgba(255,255,255,0.06);
+      position: relative;
+      overflow: hidden;
+      transition: transform .25s ease, border-color .25s ease, box-shadow .25s ease;
+    }
+
+    .tip-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at top right, rgba(163,255,18,0.12), transparent 45%);
+      pointer-events: none;
+    }
+
+    .tip-card:hover {
+      transform: translateY(-8px);
+      border-color: rgba(163,255,18,0.35);
+      box-shadow: 0 0 0 1px rgba(163,255,18,0.12), 0 18px 40px rgba(163,255,18,0.14);
+    }
+
+    .pill {
+      display: inline-block;
+      background: rgba(163,255,18,0.12);
+      color: var(--lime);
+      padding: 0.45rem 0.85rem;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      margin-bottom: 1.2rem;
+    }
+
+    .tip-card h3 {
+      color: var(--lime);
+      font-size: 1.6rem;
+      margin-bottom: 1rem;
+    }
+
+    .tip-card p {
+      color: var(--muted);
+      line-height: 1.8;
+    }
+
+    .mindset-section {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+    }
+
+    .mindset-card {
+      background: var(--card);
+      border-radius: 24px;
+      padding: 2.5rem;
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .mindset-card h3 {
+      color: var(--lime);
+      margin-bottom: 1rem;
+      font-size: 1.5rem;
+    }
+
+    .mindset-card p {
+      color: var(--muted);
+      line-height: 1.8;
+    }
+
+    .timeline {
+      display: grid;
+      gap: 1.5rem;
+      margin-top: 4rem;
+    }
+
+    .timeline-step {
+      background: var(--card);
+      border-left: 4px solid var(--lime);
+      border-radius: 0 18px 18px 0;
+      padding: 2rem;
+    }
+
+    .timeline-step h4 {
+      margin-bottom: 0.8rem;
+      font-size: 1.25rem;
+    }
+
+    .timeline-step p {
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    .final-section {
+      text-align: center;
+      padding: 8rem 8vw;
+    }
+
+    .final-section h2 {
+      font-size: clamp(2.5rem, 6vw, 5rem);
+      margin-bottom: 1rem;
+    }
+
+    .final-section h2 span {
+      color: var(--lime);
+    }
+
+    .final-section p {
+      max-width: 720px;
+      margin: 0 auto 2rem;
+      color: var(--muted);
+      line-height: 1.8;
+    }
+
+    footer {
+      border-top: 1px solid rgba(255,255,255,0.08);
+      padding: 3rem 8vw;
+      text-align: center;
+      color: var(--muted);
+    }
+
+    @media (max-width: 900px) {
+      .hero,
+      .mindset-section {
+        grid-template-columns: 1fr;
+      }
+
+      .hero h1 {
+        font-size: 3.8rem;
+      }
+
+      section {
+        padding: 5rem 7vw;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="navbar">
+    <div class="logo">PitchPro</div>
+
+    <div class="nav-links">
+      <a href="#tips">tips</a>
+      <a href="#mindset">mindset</a>
+      <a href="#growth">growth</a>
+      <a href="#habits">habits</a>
+    </div>
+  </nav>
+
+  <section class="hero">
+    <div>
+      <h1>Small habits build <span>great players.</span></h1>
+
+      <p>
+        Development is more than talent. The best players improve because they build strong habits, train consistently, and pay attention to the small details most players ignore.
+      </p>
+
+      <a href="#tips" class="cta">Explore Tips</a>
+    </div>
+
+    <div class="hero-card">
+      <h3>What PitchPro teaches</h3>
+
+      <p>→ Confidence through repetition</p>
+      <p>→ Smart decision-making</p>
+      <p>→ Consistent training habits</p>
+      <p>→ Focus during pressure moments</p>
+      <p>→ Discipline and professionalism</p>
+      <p>→ Long-term player growth</p>
+    </div>
+  </section>
+
+  <section id="tips">
+    <div class="section-header">
+      <h2>Player Development Tips</h2>
+
+      <p>
+        These principles help players improve faster while building confidence, consistency, and understanding of the game.
+      </p>
+    </div>
+
+    <div class="tips-grid">
+
+      <div class="tip-card">
+        <div class="pill">TECHNIQUE</div>
+        <h3>Train both feet</h3>
+        <p>
+          Weak foot training creates confidence under pressure and opens more passing, dribbling, and finishing options during matches.
+        </p>
+      </div>
+
+      <div class="tip-card">
+        <div class="pill">AWARENESS</div>
+        <h3>Scan before receiving</h3>
+        <p>
+          Great players already know their next action before the ball arrives. Shoulder checks improve speed of play dramatically.
+        </p>
+      </div>
+
+      <div class="tip-card">
+        <div class="pill">MENTALITY</div>
+        <h3>Don’t fear mistakes</h3>
+        <p>
+          Mistakes are part of development. Hesitation slows growth more than failure ever will.
+        </p>
+      </div>
+
+      <div class="tip-card">
+        <div class="pill">FITNESS</div>
+        <h3>Recover properly</h3>
+        <p>
+          Sleep, hydration, stretching, and recovery habits matter just as much as hard training sessions.
+        </p>
+      </div>
+
+      <div class="tip-card">
+        <div class="pill">GAME IQ</div>
+        <h3>Watch football differently</h3>
+        <p>
+          Watch movement off the ball, defensive positioning, pressing triggers, and timing — not just skills.
+        </p>
+      </div>
+
+      <div class="tip-card">
+        <div class="pill">CONSISTENCY</div>
+        <h3>Small daily work matters</h3>
+        <p>
+          30 focused minutes every day creates more improvement over time than occasional intense sessions.
+        </p>
+      </div>
+
+    </div>
+  </section>
+
+  <section id="mindset">
+    <div class="section-header">
+      <h2>Mindset & Confidence</h2>
+
+      <p>
+        Mentality separates good players from great ones. Confidence is earned through preparation, discipline, and consistent effort.
+      </p>
+    </div>
+
+    <div class="mindset-section">
+
+      <div class="mindset-card">
+        <h3>Stay calm under pressure</h3>
+        <p>
+          Players improve decision-making when they learn to stay composed during difficult moments instead of panicking.
+        </p>
+      </div>
+
+      <div class="mindset-card">
+        <h3>Focus on improvement</h3>
+        <p>
+          Comparing yourself to others slows progress. Focus on becoming more complete every week.
+        </p>
+      </div>
+
+    </div>
+
+    <div class="timeline">
+
+      <div class="timeline-step">
+        <h4>Step 1 — Build habits</h4>
+        <p>
+          Consistent routines create long-term improvement and discipline.
+        </p>
+      </div>
+
+      <div class="timeline-step">
+        <h4>Step 2 — Improve awareness</h4>
+        <p>
+          Learn to process the game faster through scanning, positioning, and repetition.
+        </p>
+      </div>
+
+      <div class="timeline-step">
+        <h4>Step 3 — Compete confidently</h4>
+        <p>
+          Confidence grows when preparation becomes consistent and reliable.
+        </p>
+      </div>
+
+      <div class="timeline-step">
+        <h4>Step 4 — Keep growing</h4>
+        <p>
+          Great players continue learning, adapting, and improving at every level.
+        </p>
+      </div>
+
+    </div>
+  </section>
+
+  <section id="growth" class="final-section">
+    <h2>Growth takes <span>consistency.</span></h2>
+
+    <p>
+      Talent helps, but habits create long-term success. Focus on steady improvement, discipline, and loving the process.
+    </p>
+
+    <a href="#" class="cta">Keep Improving</a>
+  </section>
+
+  <footer>
+    PitchPro — Tips, Mindset & Player Growth ⚽
+  </footer>
+
+  <script src="{{ url_for('static', filename='js/public-polish.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/motivational-quotes.js') }}"></script>
+</body>
+</html>

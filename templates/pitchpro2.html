@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>PitchPro — Training Prototype</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Ubuntu:300,400,700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/public-polish.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/quote-card.css') }}">
+  <style>
+  :root {
+  --bg: #0A0A0A;
+  --card: #141414;
+  --lime: #A3FF12;
+  --muted: #A1A1AA;
+  --text: #F5F5F5;
+}
+
+/* RESET & BASE */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+}
+
+h1,h2,h3,h4 {
+  font-family: 'Space Grotesk', sans-serif;
+  letter-spacing: -0.5px;
+}
+
+.muted {
+    font-family: 'Space Grotesk';
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* SECTIONS */
+section {
+  padding: 6rem 8vw;
+}
+
+/* NAVBAR */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.2rem 8vw;
+  background: rgba(10,10,10,0.85);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.navbar h3 {
+  color: var(--lime);
+  font-weight: 700;
+  font-family: 'Ubuntu', sans-serif;
+}
+
+.nav-links {
+  display: flex;
+  gap: 2rem;
+  align-items: center;
+}
+
+.navbar a,
+.dropdown-toggle {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--muted);
+  padding: 6px 10px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  position: relative;
+  transition: color 0.3s ease;
+}
+
+.navbar a:hover,
+.dropdown-toggle:hover {
+  color: var(--lime);
+  text-shadow: 0 0 6px var(--lime);
+}
+
+/* DROPDOWN */
+.nav-item {
+  position: relative;
+}
+
+/* NAVBAR LINKS UNDERLINE */
+.navbar a,
+.dropdown-toggle {
+  position: relative;
+  padding-bottom: 6px;
+  transition: color 0.3s ease;
+}
+
+/* Underline effect */
+.navbar a::after,
+.dropdown-toggle::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, #a3ff12, #528500);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s ease;
+}
+
+.navbar a:hover::after,
+.dropdown-toggle:hover::after {
+  transform: scaleX(1);
+}
+
+.chevron {
+  font-size: 11px;
+  transition: transform 0.25s ease;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 130%;
+  left: 0;
+  background: #0b0f1a;
+  border-radius: 10px;
+  padding: 8px 0;
+  min-width: 220px;
+  box-shadow: 0 18px 40px rgba(0,0,0,.35);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(8px);
+  transition: all 0.25s ease;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+}
+
+.dropdown-menu.open {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+.dropdown-menu a {
+  padding: 10px 16px;
+  color: #e5e7eb;
+  font-size: 0.95rem;
+  text-decoration: none;
+  transition: background 0.2s, color 0.2s;
+}
+
+.dropdown-menu a:hover {
+  background: rgba(163,255,18,0.15);
+  color: var(--lime);
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 130%;
+  left: 50%;
+  transform: translateX(-50%) translateY(8px);
+  background: #0b0f1a;
+  border-radius: 10px;
+  padding: 8px;
+  min-width: 220px;
+  box-shadow: 0 18px 40px rgba(0,0,0,.35);
+  opacity: 0;
+  pointer-events: none;
+  transition: all .25s ease;
+  z-index: 100;
+}
+
+.dropdown-menu.open {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* HERO */
+.hero {
+  min-height: 90vh;
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 4rem;
+  align-items: center;
+}
+
+.hero h1 {
+  font-size: clamp(2.8rem, 5vw, 4.2rem);
+  line-height: 1.1;
+  margin-bottom: 0.6rem;
+}
+
+.hero span {
+  color: var(--lime);
+}
+
+.hero p {
+  color: var(--muted);
+  max-width: 520px;
+  margin: 1.5rem 0 2.5rem;
+}
+
+.cta {
+  display: inline-block;
+  padding: 0.9rem 2rem;
+  background: var(--lime);
+  color: #000;
+  font-weight: 700;
+  border-radius: 999px;
+  text-decoration: none;
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+
+.cta:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 70px rgba(163,255,18,0.35);
+}
+
+.hero-box {
+  background: linear-gradient(135deg, rgba(163,255,18,0.15), transparent);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 20px;
+  padding: 3rem;
+}
+
+/* FEATURES */
+.features {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 2rem;
+}
+
+.feature {
+  background: var(--card);
+  padding: 2rem;
+  border-radius: 16px;
+  border: 3px solid rgba(255,255,255,0.06);
+  transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease;
+}
+
+.feature:hover {
+  transform: translateY(-6px);
+  border-color: rgba(163,255,18,0.4);
+  box-shadow: 0 0 30px 1px rgba(163,255,18,0.25), 0 12px 40px rgba(163,255,18,0.18);
+}
+
+.feature h3 {
+  color: var(--lime);
+  margin-bottom: 0.5rem;
+}
+
+section.features-section {
+  padding-top: 0.1rem; /* smaller gap above */
+  padding-bottom: 6rem; /* keep bottom if you want */
+}
+
+
+/* PROGRAMS HORIZONTAL SCROLL */
+.programs-wrapper {
+  position: relative;
+  mask-image: linear-gradient(to right, transparent, black 6%, black 94%, transparent);
+}
+
+.programs-grid {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(260px, 1fr);
+  gap: 2rem;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  padding: 1rem 2rem;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+
+.program-card {
+  scroll-snap-align: start;
+  background: var(--card);
+  border-radius: 18px;
+  padding: 2.2rem;
+  position: relative;
+  transition: transform .25s ease, box-shadow .25s ease;
+  margin-top: 20px;
+}
+
+.program-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  box-shadow: 0 0 0 rgb(164, 255, 18);
+  transition: box-shadow .25s ease;
+}
+
+.program-card:hover {
+  transform: translateY(-6px);
+  border-color: rgba(163,255,18,0.4);
+  box-shadow: 0 0 0 3px rgba(163,255,18,0.25), 0 12px 40px rgba(163,255,18,0.18);
+}
+
+.program-card h3 {
+  color: var(--lime);
+  margin-bottom: 0.75rem;
+  font-family: 'Space Grotesk', sans-serif;
+  text-transform: lowercase;
+}
+
+.program-card p {
+  color: var(--muted);
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+.programs-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.6rem;
+}
+
+.programs-arrows {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.arrow {
+  width: 70px;
+  height: 70px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.15);
+  background: rgba(20,20,20,0.9);
+  color: var(--lime);
+  font-size: 1.6rem;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.arrow:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 0 0 1px rgba(163,255,18,0.4),
+              0 8px 20px rgba(163,255,18,0.25);
+  background: #0f0f0f;
+}
+
+.arrow:active {
+  transform: translateY(0);
+}
+
+.tag {
+  display: inline-block;
+  margin-top: 1.4rem;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #000;
+  background: var(--lime);
+  padding: 0.35rem 0.7rem;
+  border-radius: 999px;
+}
+
+/* TABLE */
+.pitchpro-chart {
+  max-width: 1200px;
+  margin: 3rem auto 0;
+  background: var(--card);
+  border-radius: 22px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.06);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+}
+
+.pitchpro-chart table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.pitchpro-chart thead {
+  background: linear-gradient(90deg, var(--lime));
+  color: #000;
+}
+
+.pitchpro-chart th,
+.pitchpro-chart td {
+  padding: 1.2rem 1.4rem;
+  text-align: left;
+}
+
+.pitchpro-chart tbody tr {
+  transition: background 0.25s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.pitchpro-chart tbody tr:hover {
+  background: rgba(163,255,18,0.08);
+  transform: translateY(-2px);
+  box-shadow: inset 0 0 0 1px rgba(157, 255, 0, 0.471);
+}
+
+.pitchpro-chart td {
+  border-top: 1px solid rgba(255,255,255,0.05);
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.age-pill {
+  display: inline-block;
+  padding: 0.3rem 0.75rem;
+  border-radius: 999px;
+  background: rgba(163,255,18,0.15);
+  color: var(--lime);
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+
+.level {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.pitchpro-chart tbody tr:hover td {
+  color: var(--text);
+}
+
+/* BLOG / POSTS */
+.blog {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 2rem;
+}
+
+.post {
+  background: var(--card);
+  padding: 2rem;
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,0.06);
+  transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease;
+}
+
+.post:hover {
+  transform: translateY(-6px);
+  border-color: rgba(163,255,18,0.4);
+  box-shadow: 0 0 0 1px rgba(163,255,18,0.25), 0 12px 40px rgba(163,255,18,0.18);
+}
+
+.post h4 {
+  color: var(--lime);
+  margin-bottom: 0.6rem;
+}
+
+.post p {
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+/* FOOTER */
+footer {
+  padding: 3rem 8vw;
+  text-align: center;
+  color: var(--muted);
+  border-top: 1px solid rgba(255,255,255,0.08);
+}
+
+/* RESPONSIVE */
+@media (max-width: 900px) {
+  .hero {
+    grid-template-columns: 1fr;
+  }
+}
+
+.section-title {
+    margin-bottom: 30px
+}
+
+.get-started-dropdown {
+  display: none;
+}
+
+.get-started-dropdown.open {
+  display: block;
+}
+
+html{
+  scroll-behavior: smooth;
+  
+}
+
+#programs {
+  scroll-margin-top: 90px;
+}
+
+.span {
+  color:#A3FF12
+}
+/* Home page refresh */
+.home-page{background:#070a18}
+.home-section{position:relative;max-width:1320px;margin:0 auto;border:1px solid rgba(96,165,250,.12);border-radius:28px;background:linear-gradient(145deg,rgba(12,18,39,.72),rgba(12,10,28,.52));transition:transform .35s ease,border-color .35s ease,box-shadow .35s ease}
+.home-section:hover{transform:translateY(-5px);border-color:rgba(94,234,212,.32);box-shadow:0 22px 60px rgba(0,0,0,.25),0 0 36px rgba(37,99,235,.1)}
+.hero.home-section{min-height:72vh;margin:1.5rem auto;padding:clamp(3rem,7vw,7rem) clamp(2rem,6vw,6rem);grid-template-columns:minmax(0,1.05fr) minmax(320px,.95fr)!important;gap:clamp(2rem,7vw,7rem);overflow:hidden}
+.hero.home-section:before{content:"";position:absolute;inset:0;background:linear-gradient(120deg,rgba(34,211,238,.08),transparent 42%,rgba(168,85,247,.1));opacity:.8;pointer-events:none}
+.hero.home-section>div{position:relative;z-index:1}.hero-kicker{color:#5eead4;font-size:.72rem;font-weight:800;letter-spacing:2px;margin-bottom:1.3rem}.hero.home-section h1{font-size:clamp(3.2rem,7vw,7rem);letter-spacing:-.08em}.hero.home-section p{font-size:1.08rem;max-width:590px}.hero-actions{display:flex;align-items:center;gap:1rem;flex-wrap:wrap}.hero-link{color:#d9e4f3;font-weight:700;padding:.9rem 1.2rem;border:1px solid rgba(94,234,212,.24);border-radius:999px;transition:transform .25s ease,border-color .25s ease,background .25s ease}.hero-link:hover{transform:translateY(-3px);border-color:#5eead4;background:rgba(94,234,212,.1)}
+.home-hero-copy{min-height:360px!important;justify-content:flex-end!important;align-items:flex-start!important;padding:2.2rem!important;border-radius:24px!important;background:radial-gradient(circle at 82% 18%,rgba(168,85,247,.28),transparent 30%),radial-gradient(circle at 18% 82%,rgba(34,211,238,.18),transparent 34%),linear-gradient(145deg,rgba(16,31,58,.96),rgba(22,14,47,.96))!important;border:1px solid rgba(94,234,212,.3)!important;box-shadow:inset 0 0 70px rgba(37,99,235,.14),0 18px 50px rgba(0,0,0,.24)!important}.home-hero-copy h3{max-width:340px!important;font-size:clamp(1.8rem,3vw,3rem)!important}.home-hero-copy p.muted{max-width:320px!important}
+.home-page .hero{grid-template-columns:1.2fr 1fr!important;gap:4rem;min-height:90vh;padding:6rem 8vw;border:0;background:transparent;box-shadow:none;transform:none!important}.home-page .hero:hover{transform:none!important;border-color:transparent;box-shadow:none}.home-page .home-hero-copy:hover{transform:none!important;border-color:rgba(94,234,212,.3)!important;box-shadow:inset 0 0 70px rgba(37,99,235,.14),0 18px 50px rgba(0,0,0,.24)!important}.home-page .home-hero-copy:before,.home-page .home-hero-copy:after{display:none!important;content:none!important}.home-page .home-hero-copy h3:before{content:"PITCHPRO / PLAYER DEVELOPMENT"!important}.home-page .home-hero-copy p.muted:after{content:none!important;display:none!important}
+.home-page .features-section.home-section,.home-page .development-section.home-section,.home-page .levels-section.home-section{border:0!important}.home-page .features-section.home-section:hover,.home-page .development-section.home-section:hover,.home-page .levels-section.home-section:hover{border-color:transparent!important;box-shadow:none!important;transform:none!important}
+.home-page .navbar .nav-links>a,.home-page .navbar .nav-item>.dropdown-toggle{isolation:isolate;border:1px solid transparent;border-radius:12px;padding:10px 13px;overflow:hidden;transition:transform .3s cubic-bezier(.2,.8,.2,1),color .3s ease,background .3s ease,border-color .3s ease,box-shadow .3s ease;will-change:transform}.home-page .navbar .nav-links>a:before,.home-page .navbar .nav-item>.dropdown-toggle:before{content:"";position:absolute;z-index:-1;inset:0;background:linear-gradient(110deg,transparent 15%,rgba(94,234,212,.34) 48%,rgba(168,85,247,.3) 55%,transparent 85%);transform:translateX(-125%) skewX(-18deg);transition:transform .65s cubic-bezier(.2,.8,.2,1)}.home-page .navbar .nav-links>a:after,.home-page .navbar .nav-item>.dropdown-toggle:after{content:"";position:absolute;left:12px;right:12px;bottom:4px;width:auto;height:2px;background:linear-gradient(90deg,#a3ff12,#5eead4,#a855f7);transform:scaleX(0);transform-origin:center;transition:transform .3s ease;box-shadow:0 0 10px rgba(94,234,212,.85)}.home-page .navbar .nav-links>a:hover,.home-page .navbar .nav-item>.dropdown-toggle:hover{color:#fff!important;background:linear-gradient(135deg,rgba(94,234,212,.13),rgba(168,85,247,.16));border-color:rgba(94,234,212,.42);transform:translateY(-4px) rotateX(8deg) rotateZ(-1deg);box-shadow:0 10px 24px rgba(0,0,0,.24),0 0 22px rgba(94,234,212,.16),inset 0 1px rgba(255,255,255,.16);text-shadow:none;animation:home-nav-pulse 1.6s ease-in-out infinite}.home-page .navbar .nav-links>a:hover:before,.home-page .navbar .nav-item>.dropdown-toggle:hover:before{transform:translateX(125%) skewX(-18deg)}.home-page .navbar .nav-links>a:hover:after,.home-page .navbar .nav-item>.dropdown-toggle:hover:after{transform:scaleX(1)}.home-page .navbar .nav-item:hover>.dropdown-toggle .chevron{color:#a3ff12;transform:rotate(180deg) translateY(1px)}@keyframes home-nav-pulse{0%,100%{box-shadow:0 10px 24px rgba(0,0,0,.24),0 0 16px rgba(94,234,212,.12),inset 0 1px rgba(255,255,255,.16)}50%{box-shadow:0 10px 28px rgba(0,0,0,.28),0 0 30px rgba(168,85,247,.22),inset 0 1px rgba(255,255,255,.22)}}
+.home-page .navbar{transition:box-shadow .35s ease,border-color .35s ease}.home-page .navbar:hover{border-bottom-color:rgba(94,234,212,.58)!important;box-shadow:0 8px 30px rgba(34,211,238,.1),0 0 18px rgba(168,85,247,.08)}.home-page .navbar .nav-links>a,.home-page .navbar .nav-item>.dropdown-toggle{border:0;border-radius:8px;padding:8px 10px;overflow:visible;transform:none;animation:none!important;box-shadow:none;background:transparent;transition:color .25s ease,text-shadow .25s ease}.home-page .navbar .nav-links>a:before,.home-page .navbar .nav-item>.dropdown-toggle:before{display:none}.home-page .navbar .nav-links>a:after,.home-page .navbar .nav-item>.dropdown-toggle:after{left:8px;right:8px;bottom:2px;height:2px;transform:scaleX(0);background:#a3ff12;box-shadow:0 0 9px rgba(163,255,18,.9);transition:transform .25s ease}.home-page .navbar .nav-links>a:hover,.home-page .navbar .nav-item>.dropdown-toggle:hover{color:#f8fafc!important;background:transparent;border:0;transform:none;box-shadow:none;text-shadow:0 0 9px rgba(94,234,212,.85),0 0 18px rgba(168,85,247,.4)}.home-page .navbar .nav-links>a:hover:after,.home-page .navbar .nav-item>.dropdown-toggle:hover:after{transform:scaleX(1)}
+.home-page .navbar .nav-links>a:hover:after,.home-page .navbar .nav-item>.dropdown-toggle:hover:after,.home-page .navbar .dropdown-menu a:hover:after{transform:scaleX(1);transform-origin:left;animation:home-writing-stroke .65s steps(14,end) both}.home-page .navbar .nav-links>a:after,.home-page .navbar .nav-item>.dropdown-toggle:after,.home-page .navbar .dropdown-menu a:after{content:"";position:absolute;left:8px;right:8px;bottom:2px;width:auto;height:2px;background:linear-gradient(90deg,#a3ff12,#5eead4);box-shadow:0 0 8px rgba(163,255,18,.9);transform:scaleX(0);transform-origin:left;transition:none}.home-page .navbar .dropdown-menu a{position:relative;overflow:hidden;transition:color .25s ease,background .25s ease,padding-left .25s ease}.home-page .navbar .dropdown-menu a:after{left:12px;right:12px;bottom:5px}.home-page .navbar .dropdown-menu a:hover{color:#f8fafc!important;background:rgba(94,234,212,.1);padding-left:20px;text-shadow:0 0 9px rgba(94,234,212,.72)}.home-page .navbar .dropdown-menu a:hover:after{box-shadow:0 0 10px rgba(94,234,212,.85)}@keyframes home-writing-stroke{0%{transform:scaleX(0);filter:brightness(1)}70%{transform:scaleX(.82);filter:brightness(1.35)}100%{transform:scaleX(1);filter:brightness(1)}}
+.home-page .navbar .nav-links>a,.home-page .navbar .nav-item>.dropdown-toggle,.home-page .navbar .dropdown-menu a{transition:color .2s ease,background .2s ease!important}.home-page .navbar .nav-links>a:after,.home-page .navbar .nav-item>.dropdown-toggle:after,.home-page .navbar .dropdown-menu a:after{animation:none!important;transition:transform .2s ease!important;background:#a3ff12;box-shadow:0 0 8px rgba(163,255,18,.72)}.home-page .navbar .nav-links>a:hover:after,.home-page .navbar .nav-item>.dropdown-toggle:hover:after,.home-page .navbar .dropdown-menu a:hover:after{transform:scaleX(1);animation:none!important}.home-page .navbar .dropdown-menu a:hover{padding-left:16px;background:transparent;text-shadow:none}
+.home-page .navbar .nav-item:after{display:none!important}.home-page .navbar .nav-links>a:before,.home-page .navbar .nav-item>.dropdown-toggle:before,.home-page .navbar .dropdown-menu a:before{display:none!important}.home-page .navbar .nav-links>a:after,.home-page .navbar .nav-item>.dropdown-toggle:after,.home-page .navbar .dropdown-menu a:after{left:8px;right:8px;bottom:1px;height:2px;transform:scaleX(0);transform-origin:center;background:#a3ff12;box-shadow:0 0 9px rgba(163,255,18,.9);content:""}.home-page .navbar .nav-links>a:hover:after,.home-page .navbar .nav-item>.dropdown-toggle:hover:after,.home-page .navbar .dropdown-menu a:hover:after{transform:scaleX(1)}.home-page .navbar .nav-item>.dropdown-toggle:before{display:block!important;position:absolute;left:13px;right:13px;bottom:6px;height:1px;background:#5eead4;box-shadow:0 0 7px rgba(94,234,212,.85);transform:scaleX(0);transform-origin:center;transition:transform .2s ease;content:""}.home-page .navbar .nav-item>.dropdown-toggle:hover:before{transform:scaleX(1)}
+.home-page .navbar .nav-links>a:before,.home-page .navbar .nav-item>.dropdown-toggle:before,.home-page .navbar .dropdown-menu a:before{display:block!important;position:absolute;left:8px;right:8px;top:1px;bottom:auto;height:2px;background:#5eead4;box-shadow:0 0 8px rgba(94,234,212,.85);transform:scaleX(0);transform-origin:center;transition:transform .2s ease;content:""}.home-page .navbar .nav-links>a:after,.home-page .navbar .nav-item>.dropdown-toggle:after,.home-page .navbar .dropdown-menu a:after{left:8px;right:8px;top:auto;bottom:1px;height:2px;background:#a3ff12;box-shadow:0 0 9px rgba(163,255,18,.9);transform:scaleX(0);transform-origin:center;transition:transform .2s ease;content:""}.home-page .navbar .nav-links>a:hover:before,.home-page .navbar .nav-item>.dropdown-toggle:hover:before,.home-page .navbar .dropdown-menu a:hover:before,.home-page .navbar .nav-links>a:hover:after,.home-page .navbar .nav-item>.dropdown-toggle:hover:after,.home-page .navbar .dropdown-menu a:hover:after{transform:scaleX(1)}
+.home-page .navbar .nav-links>a,.home-page .navbar .nav-item>.dropdown-toggle,.home-page .navbar .dropdown-menu a{border:1px solid transparent;border-radius:9px}.home-page .navbar .nav-links>a:before,.home-page .navbar .nav-item>.dropdown-toggle:before,.home-page .navbar .dropdown-menu a:before,.home-page .navbar .nav-links>a:after,.home-page .navbar .nav-item>.dropdown-toggle:after,.home-page .navbar .dropdown-menu a:after{display:none!important}.home-page .navbar .nav-links>a:hover,.home-page .navbar .nav-item>.dropdown-toggle:hover,.home-page .navbar .dropdown-menu a:hover{border-color:rgba(94,234,212,.72);background:rgba(94,234,212,.08);box-shadow:0 0 0 1px rgba(163,255,18,.2),0 0 16px rgba(94,234,212,.3),inset 0 0 12px rgba(168,85,247,.1);animation:home-nav-box-shake .34s ease-in-out both}.home-page .navbar .dropdown-menu a:hover{padding-left:16px;background:rgba(94,234,212,.08);text-shadow:none}@keyframes home-nav-box-shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-1px) rotate(-.4deg)}50%{transform:translateX(1px) rotate(.4deg)}75%{transform:translateX(-.5px) rotate(-.2deg)}}
+.home-page .navbar .nav-links>a:hover,.home-page .navbar .nav-item>.dropdown-toggle:hover,.home-page .navbar .dropdown-menu a:hover{border-color:transparent;background:transparent;box-shadow:inset 0 1px 0 #5eead4,inset 0 -1px 0 #a3ff12,inset 1px 0 0 #5eead4,inset -1px 0 0 #a855f7,0 0 14px rgba(94,234,212,.28);animation:home-nav-box-shake .34s ease-in-out both}
+.home-page .navbar .nav-links>a:hover,.home-page .navbar .nav-item>.dropdown-toggle:hover,.home-page .navbar .dropdown-menu a:hover{animation:home-nav-jiggle .42s ease-in-out both}@keyframes home-nav-jiggle{0%,100%{transform:translateX(0) rotate(0)}15%{transform:translateX(-2px) rotate(-1deg)}30%{transform:translateX(2px) rotate(1deg)}45%{transform:translateX(-2px) rotate(-.8deg)}60%{transform:translateX(1.5px) rotate(.7deg)}75%{transform:translateX(-1px) rotate(-.3deg)}90%{transform:translateX(.5px) rotate(.15deg)}}
+.home-page .navbar .nav-item>.dropdown-toggle:hover{animation:none!important;box-shadow:inset 2px 0 0 #5eead4,inset -2px 0 0 #a855f7,0 0 14px rgba(94,234,212,.3)!important}
+.features-section.home-section{padding:clamp(2rem,5vw,4.5rem);}.features-section.home-section h2{font-size:clamp(2rem,4vw,3.5rem);margin-bottom:2rem!important}.features-section .features{position:relative;z-index:1}.feature{min-height:180px!important;padding:1.7rem!important}
+.section-heading{max-width:720px;margin-bottom:2rem}.section-heading .eyebrow{color:#5eead4;font-size:.72rem;font-weight:800;letter-spacing:2px}.section-heading h2{font-size:clamp(2rem,4vw,3.5rem);margin:.65rem 0}.section-heading p{color:#aeb8cc;max-width:620px;line-height:1.7}
+.development-section{padding:clamp(2rem,5vw,4.5rem)}.development-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem}.development-card{position:relative;overflow:hidden;min-height:190px;padding:1.5rem;border:1px solid rgba(96,165,250,.18);border-radius:18px;background:rgba(16,22,43,.76);transition:transform .3s ease,border-color .3s ease,box-shadow .3s ease}.development-card:before{content:"";position:absolute;inset:0;background:linear-gradient(115deg,transparent 20%,rgba(94,234,212,.15) 50%,transparent 80%);transform:translateX(-120%);transition:transform .6s ease}.development-card:hover{transform:translateY(-8px) rotate(-.5deg);border-color:rgba(163,255,18,.62);box-shadow:0 18px 40px rgba(0,0,0,.3),0 0 28px rgba(163,255,18,.12)}.development-card:hover:before{transform:translateX(120%)}.development-number{position:relative;color:#a3ff12;font-family:'Space Grotesk',sans-serif;font-size:2rem}.development-card h3,.development-card p{position:relative}.development-card h3{margin:.8rem 0 .45rem;color:#f8fafc}.development-card p{color:#aeb8cc;font-size:.92rem;line-height:1.6}
+.levels-section{padding:clamp(2rem,5vw,4.5rem)}.levels-section h1,.levels-section h2{text-align:left!important}.levels-section h1{font-size:clamp(2rem,4vw,3.5rem);margin-bottom:.8rem}.levels-section h2{max-width:780px;color:#aeb8cc!important;font-size:1.05rem!important;line-height:1.7!important;font-weight:400!important}.programs-section{padding:clamp(2rem,5vw,4.5rem)}
+@media(max-width:900px){.hero.home-section{grid-template-columns:1fr!important;min-height:auto}.development-grid{grid-template-columns:1fr}.home-hero-copy{min-height:280px!important}}
+@media(max-width:600px){.home-section{border-radius:20px}.hero.home-section{margin:.8rem;padding:3rem 1.4rem}.hero.home-section h1{font-size:clamp(3rem,15vw,5rem)}.features-section.home-section,.development-section,.levels-section,.programs-section{padding:2rem 1rem}.hero-actions{align-items:stretch;flex-direction:column}.hero-actions>*{text-align:center}}
+  </style>
+</head>
+<body class="home-page">
+
+<nav class="navbar">
+  <h1>Pitch<span class="span">Pro</span></h1>
+
+  <div class="nav-links">
+
+    <div class="nav-item dropdown">
+      <a class="dropdown-toggle" href="#programs">
+        programs <span class="chevron">▾</span>
+      </a>
+
+      <div class="dropdown-menu">
+        <a href="#programs">U8–U10 foundation</a>
+        <a href="#programs">U11–U12 development</a>
+        <a href="#programs">U13–U14 competitive</a>
+        <a href="#programs">U15–U16 elite</a>
+        <a href="#programs">U17–U18 performance</a>
+      </div>
+    </div>
+
+    <a href="{{ url_for('drills') }}">drills</a>
+
+    <a href="#levels">levels</a>
+
+    <a href="{{ url_for('tips') }}">tips</a>
+
+    <a href="{{ url_for('about') }}">about</a>
+
+    <div class="nav-item dropdown">
+
+      <a class="dropdown-toggle">
+        get started <span class="chevron">▾</span>
+      </a>
+
+      <div class="dropdown-menu">
+
+        <a href="{{ url_for('signup') }}">
+          sign up
+        </a>
+
+        <a href="{{ url_for('login') }}">
+          log in
+        </a>
+
+      </div>
+
+    </div>
+
+  </div>
+</nav>
+
+<main>
+<section class="hero">
+  <div>
+    <div class="hero-kicker">PLAYER DEVELOPMENT / PITCHPRO</div>
+    <h1>Train smarter.<br><span>Build real players.</span></h1>
+    <p>
+      PitchPro is a training concept built around structure, progression,
+      and real football development — not hype.
+    </p>
+    <div class="hero-actions"><a class="cta" href="#programs">Explore the programs</a><a class="hero-link" href="{{ url_for('signup') }}">Start your journey</a></div>
+  </div>
+
+  <div class="hero-box home-hero-copy">
+    <h3>What we provide our players</h3>
+    <p class="muted">
+      > Clear development paths<br>
+      > Age-appropriate training<br>
+      > Skill + game intelligence focus<br>
+      > Long-term growth mindset
+    </p>
+  </div>
+</section>
+
+<section class="features-section home-section">
+  <h2 style="margin-bottom:2rem;">Why PitchPro?</h2>
+  <div class="features">
+    <div class="feature">
+      <h3>Structured progression</h3>
+      <p>No random drills. Everything builds forward.</p>
+    </div>
+    <div class="feature">
+      <h3>Age-smart training</h3>
+      <p>What you train changes as the player grows.</p>
+    </div>
+    <div class="feature">
+      <h3>Position Specific</h3>
+      <p>Free training tailored to your preference.</p>
+    </div>
+  </div>
+</section>
+
+<section class="development-section home-section">
+  <div class="section-heading"><div class="eyebrow">THE PITCHPRO METHOD</div><h2>A clearer path from practice to performance.</h2><p>Every part of the experience is built to make training easier to understand, easier to repeat, and more connected to the match.</p></div>
+  <div class="development-grid">
+    <article class="development-card"><div class="development-number">01</div><h3>Build the base</h3><p>Own the first touch, movement quality, and confidence that every player needs.</p></article>
+    <article class="development-card"><div class="development-number">02</div><h3>Read the game</h3><p>Turn technique into better scanning, positioning, decisions, and timing.</p></article>
+    <article class="development-card"><div class="development-number">03</div><h3>Transfer to matches</h3><p>Train with purpose so progress shows up when the speed and pressure rise.</p></article>
+  </div>
+</section>
+
+ <section class="py-14 levels-section home-section" id = "levels">
+      <h1 class="text-4xl md:text-5xl font-extrabold leading-tight text-center">Find your training level</h1>
+      <h2 class="text-4xl md:text-5xl font-extrabold leading-tight text-center">This chart isn’t about rushing levels.
+It’s about training the right things at the right time.
+Skipping steps doesn’t make better players — mastering them does.</h2>
+      <div class="pitchpro-chart mt-8">
+        <table>
+          <thead>
+            <tr>
+              <th>Age</th>
+              <th>Level</th>
+              <th>Programs / Leagues</th>
+              <th>Primary Focus</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td><span class="age-pill">5–6</span></td><td class="level">Intro / Grassroots</td><td>Recreational, YMCA, AYSO</td><td>Fun, movement, basic ball touches</td></tr>
+            <tr><td><span class="age-pill">7–8</span></td><td class="level">Beginner / Recreational</td><td>Recreational leagues, intro academies</td><td>Dribbling, passing, teamwork</td></tr>
+            <tr><td><span class="age-pill">9–10</span></td><td class="level">Academy / Pre-Competitive</td><td>Club academies, travel teams</td><td>Ball mastery, positions, basic tactics</td></tr>
+            <tr><td><span class="age-pill">11–12</span></td><td class="level">Competitive Youth</td><td>Competitive clubs, travel leagues</td><td>Technique, decision-making, fitness basics</td></tr>
+            <tr><td><span class="age-pill">13–14</span></td><td class="level">Advanced Competitive</td><td>State leagues, regional tournaments</td><td>Speed of play, tactics, physical growth</td></tr>
+            <tr><td><span class="age-pill">15–16</span></td><td class="level">Elite Youth</td><td>ECNL, MLS NEXT</td><td>High intensity, advanced tactics, exposure</td></tr>
+            <tr><td><span class="age-pill">17–18</span></td><td class="level">Pre-Professional / Showcase</td><td>MLS NEXT, ECNL showcases</td><td>Recruitment, leadership, pro pathways</td></tr>
+            <tr><td><span class="age-pill">18–20</span></td><td class="level">College / Pro Pathway</td><td>NCAA, NAIA, USL Academy, MLS NEXT Pro</td><td>Performance, strength, career progression</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+<section>
+
+<section id="programs" class="programs-section home-section">
+  <div class="programs-header">
+    <h1 class="section-title">Training Programs</h1>
+
+    <div class="programs-arrows">
+      <button class="arrow left" aria-label="Scroll left">←</button>
+      <button class="arrow right" aria-label="Scroll right">→</button>
+    </div>
+  </div>
+  <div class="programs-grid">
+    <div class="program-card">
+      <h3>foundation</h3>
+      <p>Build comfort on the ball, coordination, and confidence through simple, repeatable movements.</p>
+      <span class="tag">ages 6–9</span>
+    </div>
+
+    <div class="program-card">
+      <h3>ball mastery</h3>
+      <p>High-rep touches, weak-foot work, and tight-space control designed for real game carryover.</p>
+      <span class="tag">ages 9–13</span>
+    </div>
+
+    <div class="program-card">
+      <h3>game intelligence</h3>
+      <p>Decision-making, scanning, positioning, and understanding the game beyond skills.</p>
+      <span class="tag">ages 12–16</span>
+    </div>
+
+    <div class="program-card">
+      <h3>elite prep</h3>
+      <p>High-intensity sessions focused on speed of play, composure, and competitive mindset.</p>
+      <span class="tag">ages 15–18</span>
+    </div>
+
+    <div class="program-card">
+      <h3>professional exposure</h3>
+      <p>Work on consistency and reaching full potential.</p>
+      <span class="tag">ages 18-20+</span>
+    </div>
+     <div class="program-card">
+      <h3>goalkeeper training</h3>
+      <p>Handling, diving, reactions, and everything you need to become a goalkeeper.</p>
+      <span class="tag">all ages</span>
+    </div>
+  </div>
+</section>
+
+  
+</section>
+
+<footer>
+  PitchPro — Player development, built with purpose.
+</footer>
+</main>
+<script>
+
+const dropdownItems = document.querySelectorAll(".nav-item.dropdown");
+
+dropdownItems.forEach(item => {
+  const toggle = item.querySelector(".dropdown-toggle");
+  const menu = item.querySelector(".dropdown-menu");
+  const chevron = item.querySelector(".chevron");
+
+  toggle.addEventListener("click", e => {
+    e.stopPropagation();
+
+    dropdownItems.forEach(other => {
+      if (other !== item) {
+        other.querySelector(".dropdown-menu").classList.remove("open");
+        other.querySelector(".chevron").style.transform = "rotate(0)";
+      }
+    });
+
+    const isOpen = menu.classList.toggle("open");
+    chevron.style.transform = isOpen ? "rotate(180deg)" : "rotate(0)";
+  });
+});
+
+document.addEventListener("click", () => {
+  dropdownItems.forEach(item => {
+    item.querySelector(".dropdown-menu").classList.remove("open");
+    item.querySelector(".chevron").style.transform = "rotate(0)";
+  });
+});
+
+const programsGrid = document.querySelector(".programs-grid");
+const leftArrow = document.querySelector(".arrow.left");
+const rightArrow = document.querySelector(".arrow.right");
+
+const scrollAmount = 800;
+
+rightArrow.addEventListener("click", () => {
+  programsGrid.scrollBy({ left: scrollAmount, behavior: "smooth" });
+});
+
+leftArrow.addEventListener("click", () => {
+  programsGrid.scrollBy({ left: -scrollAmount, behavior: "smooth" });
+});
+
+
+</script>
+
+  <script src="{{ url_for('static', filename='js/public-polish.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/motivational-quotes.js') }}"></script>
+</body>
+</html>

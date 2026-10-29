@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PitchPro Sign Up</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/public-polish.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/quote-card.css') }}">
+  <style>
+    :root {
+      --bg: #0A0A0A;
+      --card: #141414;
+      --lime: #A3FF12;
+      --text: #F5F5F5;
+      --muted: #A1A1AA;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background:
+        radial-gradient(circle at top left, rgba(163,255,18,0.08), transparent 30%),
+        radial-gradient(circle at bottom right, rgba(94,234,212,0.06), transparent 30%),
+        var(--bg);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 3rem;
+      overflow-x: hidden;
+    }
+
+    .signup-container {
+      width: 100%;
+      max-width: 560px;
+      background: rgba(20,20,20,0.92);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 32px;
+      padding: 3rem;
+      backdrop-filter: blur(14px);
+      box-shadow: 0 30px 80px rgba(0,0,0,0.55);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .signup-container::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at top right, rgba(163,255,18,0.10), transparent 35%);
+      pointer-events: none;
+    }
+
+    .logo {
+      color: var(--lime);
+      font-size: 1.8rem;
+      font-weight: 700;
+      margin-bottom: 1.5rem;
+      font-family: 'Space Grotesk', sans-serif;
+    }
+
+    h1 {
+      font-size: clamp(2.5rem, 6vw, 4rem);
+      line-height: 1;
+      margin-bottom: 1rem;
+      font-family: 'Space Grotesk', sans-serif;
+    }
+
+    h1 span {
+      color: var(--lime);
+    }
+
+    .subtitle {
+      color: var(--muted);
+      line-height: 1.8;
+      margin-bottom: 2.5rem;
+    }
+
+    .role-picker {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: .8rem;
+      margin-bottom: .3rem;
+    }
+
+    .role-option {
+      border: 1px solid rgba(94,234,212,.22);
+      background: linear-gradient(145deg, rgba(37,99,235,.12), rgba(20,20,20,.7));
+      color: var(--text);
+      border-radius: 16px;
+      padding: 1rem;
+      text-align: left;
+      cursor: pointer;
+      transition: transform .22s ease, border-color .22s ease, box-shadow .22s ease, background .22s ease;
+    }
+
+    .role-option strong,
+    .role-option small { display: block; }
+    .role-option strong { font-size: 1rem; margin-bottom: .3rem; }
+    .role-option small { color: var(--muted); line-height: 1.4; }
+    .role-option:hover { transform: translateY(-2px); border-color: rgba(168,85,247,.7); }
+    .role-option.active { border-color: var(--lime); background: linear-gradient(145deg, rgba(163,255,18,.16), rgba(34,211,238,.1)); box-shadow: 0 0 20px rgba(163,255,18,.12); }
+
+    form {
+      display: grid;
+      gap: 1.4rem;
+    }
+
+    .name-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+
+    label {
+      color: var(--muted);
+      font-size: 0.95rem;
+      font-weight: 600;
+    }
+
+    input,
+    select {
+      width: 100%;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.08);
+      color: var(--text);
+      padding: 1rem 1rem;
+      border-radius: 16px;
+      outline: none;
+      font-size: 1rem;
+      transition: all .25s ease;
+    }
+
+    input:focus,
+    select:focus {
+      border-color: rgba(163,255,18,0.55);
+      box-shadow: 0 0 0 4px rgba(163,255,18,0.10);
+      transform: translateY(-1px);
+    }
+
+    input::placeholder {
+      color: #777;
+    }
+
+    .password-strength {
+      height: 8px;
+      width: 100%;
+      background: rgba(255,255,255,0.06);
+      border-radius: 999px;
+      overflow: hidden;
+      margin-top: -0.3rem;
+    }
+
+    .password-strength span {
+      display: block;
+      width: 72%;
+      height: 100%;
+      background: linear-gradient(90deg, var(--lime), #5EEAD4);
+      border-radius: inherit;
+    }
+
+    .signup-btn {
+      margin-top: 1rem;
+      border: none;
+      background: var(--lime);
+      color: #000;
+      font-weight: 700;
+      padding: 1rem;
+      border-radius: 999px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all .25s ease;
+    }
+
+    .signup-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 14px 30px rgba(163,255,18,0.35);
+    }
+
+    .login-link {
+      text-align: center;
+      margin-top: 1.8rem;
+      color: var(--muted);
+    }
+
+    .login-link a {
+      color: var(--lime);
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    .login-link a:hover {
+      text-decoration: underline;
+    }
+
+    @media (max-width: 640px) {
+      .signup-container {
+        padding: 2rem;
+      }
+
+      .name-row {
+        grid-template-columns: 1fr;
+      }
+
+      .role-picker { grid-template-columns: 1fr; }
+
+      body {
+        padding: 1.5rem;
+      }
+    }
+    /* Full-page, friendly onboarding layout */
+    body{padding:0;align-items:stretch;justify-content:stretch}
+    .signup-container{min-height:100vh;width:100%;max-width:none;border:0;border-radius:0;padding:clamp(2rem,5vw,5rem);display:grid;grid-template-columns:minmax(280px,.9fr) minmax(420px,620px);align-items:start;justify-content:space-evenly;gap:clamp(3rem,7vw,9rem);background:linear-gradient(135deg,rgba(8,13,32,.98),rgba(20,10,39,.96));box-shadow:none}
+    .signup-container::after{content:"";position:absolute;width:42vw;height:42vw;right:-15vw;bottom:-18vw;border:1px solid rgba(94,234,212,.16);border-radius:50%;box-shadow:0 0 0 38px rgba(168,85,247,.04),0 0 0 76px rgba(163,255,18,.03);pointer-events:none}
+    .signup-container .auth-intro{position:sticky;top:5rem;align-self:start;z-index:1;max-width:560px;padding-top:3rem;animation:auth-rise .7s ease both}.auth-kicker{color:var(--lime);font-size:.72rem;font-weight:800;letter-spacing:2px;margin-bottom:1.5rem}.auth-ball{display:grid;place-items:center;width:76px;height:76px;margin-bottom:1.6rem;border:1px solid rgba(94,234,212,.35);border-radius:24px;background:linear-gradient(135deg,rgba(94,234,212,.16),rgba(168,85,247,.18));font-size:2.4rem;box-shadow:0 0 34px rgba(94,234,212,.14);transform:rotate(-8deg)}.auth-intro h2{font-family:'Space Grotesk',sans-serif;font-size:clamp(2.5rem,5vw,5.6rem);line-height:.98;letter-spacing:-.07em;margin-bottom:1.5rem}.auth-intro h2 span{color:var(--lime)}.auth-intro p{max-width:430px;color:#b9bed0;line-height:1.75;font-size:1.05rem}.auth-points{display:grid;gap:.8rem;margin-top:2rem;color:#dcefc1;font-size:.85rem;font-weight:600}.signup-container .auth-form{position:relative;z-index:2;width:100%;max-width:620px;padding:clamp(1.5rem,3vw,2.8rem);border:1px solid rgba(255,255,255,.1);border-radius:28px;background:rgba(9,13,27,.72);backdrop-filter:blur(18px);box-shadow:0 24px 80px rgba(0,0,0,.38);animation:auth-rise .7s .08s ease both}.signup-container .auth-form .logo{margin-bottom:1rem}.signup-container .auth-form h1{font-size:clamp(2.2rem,4vw,3.5rem)}.signup-container .auth-form .subtitle{line-height:1.6;margin-bottom:1.7rem}.signup-container .auth-form form{gap:1.05rem}.signup-container input,.signup-container select{min-height:52px}.signup-container .role-option{min-height:94px}.signup-container .signup-btn{min-height:54px}@keyframes auth-rise{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+    @media(max-width:980px){.signup-container{grid-template-columns:1fr;justify-items:center;gap:2rem;padding:2.5rem 1.2rem 5rem}.signup-container .auth-intro{position:relative;top:auto;max-width:680px;padding-top:0;text-align:center}.signup-container .auth-ball{margin-left:auto;margin-right:auto}.signup-container .auth-intro p{margin:auto}.signup-container .auth-points{justify-items:center}.signup-container .auth-form{max-width:680px}}
+    .signup-container .auth-form,.signup-container .auth-form input,.signup-container .auth-form select,.signup-container .auth-form textarea,.signup-container .auth-form button,.signup-container .auth-form label{font-family:'Space Grotesk','Inter',sans-serif}.signup-container .auth-intro{z-index:3;isolation:isolate}.signup-container .auth-intro::before{content:"";position:absolute;z-index:-1;inset:-8rem -5rem -6rem -4rem;background:radial-gradient(ellipse at 35% 35%,rgba(94,234,212,.12),transparent 48%),radial-gradient(ellipse at 70% 70%,rgba(168,85,247,.13),transparent 52%);filter:blur(10px);pointer-events:none}.signup-container .auth-points{gap:.7rem}.signup-container .auth-points span{position:relative;overflow:hidden;padding:1rem 1.1rem;border:1px solid rgba(94,234,212,.16);border-radius:14px;background:rgba(12,22,42,.58);transition:transform .28s ease,border-color .28s ease,box-shadow .28s ease,background .28s ease}.signup-container .auth-points span::after{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 20%,rgba(163,255,18,.16) 50%,transparent 80%);transform:translateX(-115%);transition:transform .5s ease}.signup-container .auth-points span:hover{transform:translateX(10px) translateY(-3px);border-color:rgba(163,255,18,.62);background:rgba(21,42,48,.8);box-shadow:0 12px 30px rgba(0,0,0,.25),0 0 24px rgba(94,234,212,.13)}.signup-container .auth-points span:hover::after{transform:translateX(115%)}.signup-container .auth-form{z-index:2}
+    @media(max-width:520px){.signup-container .auth-form{padding:1.4rem;border-radius:22px}.signup-container .auth-form h1{font-size:2.5rem}.signup-container .name-row{grid-template-columns:1fr}.signup-container .role-picker{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+
+  <div class="signup-container">
+
+    <div class="auth-intro">
+      <div class="auth-kicker">WELCOME TO PITCHPRO</div>
+      <div class="auth-ball">⚽</div>
+      <h2>Build your game.<br><span>Own your journey.</span></h2>
+      <p>Choose the account that fits you best. Players train and grow; coaches build teams and guide the next generation.</p>
+      <div class="auth-points"><span>✦ Smart drills for real matches</span><span>✦ Team training and homework</span><span>✦ Progress that keeps you moving</span></div>
+    </div>
+
+    <div class="auth-form">
+
+    <div class="logo">PitchPro</div>
+
+    <h1>Create your <span>account.</span></h1>
+
+    <p class="subtitle" id="signupSubtitle">
+      Start building confidence, awareness, technique, and elite habits through structured player development.
+    </p>
+
+    <form>
+
+      <div class="input-group">
+        <label>Account type</label>
+        <div class="role-picker" role="group" aria-label="Choose account type">
+          <button class="role-option active" type="button" data-role="player" aria-pressed="true">
+            <strong>⚽ Player</strong>
+            <small>Train, track progress, and build your game.</small>
+          </button>
+          <button class="role-option" type="button" data-role="coach" aria-pressed="false">
+            <strong>📋 Coach</strong>
+            <small>Build teams, assign training, and coach players.</small>
+          </button>
+        </div>
+        <input id="role" type="hidden" value="player" />
+      </div>
+
+      <div class="name-row">
+
+        <div class="input-group">
+          <label>First Name</label>
+          <input id="firstName" type="text" placeholder="Enter first name" />
+        </div>
+
+        <div class="input-group">
+          <label>Last Name</label>
+          <input id="lastName" type="text" placeholder="Enter last name" />
+        </div>
+
+      </div>
+
+      <div class="input-group">
+        <label><div id="programRecommendations" class="recommend-box">
+  Enter your date of birth to see recommended programs.
+</div></label>
+       <input id="dob" type="date" />
+      </div>
+
+      <div class="input-group">
+        <label>Program</label>
+
+        <select id="program">
+          <option>Select a program</option>
+          <option>Foundation</option>
+          <option>Ball Mastery</option>
+          <option>Game Intelligence</option>
+          <option>Elite Prep</option>
+          <option>Professional Exposure</option>
+        </select>
+      </div>
+
+      <div class="input-group">
+        <label>Position</label>
+
+        <select id = "position">
+          <option>Select a position</option>
+          <option>Goalkeeper</option>
+          <option>Fullback</option>
+          <option>Centreback</option>
+          <option>Midfielder</option>
+          <option>Winger</option>
+          <option>Striker</option>
+        </select>
+      </div>
+
+      <div class="input-group">
+        <label></label>
+
+        <select id = "foot_type">
+          <option>Select a preference</option>
+          <option>Left</option>
+          <option>Right</option>
+          <option>Both/Ambipedal</option>
+        </select>
+      </div>
+
+      <div class="input-group">
+        <label>Email</label>
+        <input id="email" type="email" placeholder="Enter email" />
+      </div>
+
+      <div class="input-group">
+        <label>Password</label>
+       <input id="password" type="password" placeholder="Create password" />
+      </div>
+
+      <div class="password-strength">
+        <span></span>
+      </div>
+
+      <div class="input-group">
+        <label>Confirm Password</label>
+        <input id="confirmPassword" type="password" placeholder="Confirm password" />
+      </div>
+
+      <button class="signup-btn" id="signupBtn" type="button">Create Account</button>
+
+    </form>
+
+    <div class="login-link">
+      Already have an account?
+      <a href="{{ url_for('login')}}">Log in</a>
+    </div>
+
+    </div>
+
+  </div>
+
+<script 
+  type="module"
+  src="{{ url_for('static', filename = 'js/signup.js')}}"
+  ></script>
+
+
+  <script src="{{ url_for('static', filename='js/public-polish.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/motivational-quotes.js') }}"></script>
+</body>
+</html>

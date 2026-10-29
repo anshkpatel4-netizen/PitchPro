@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ drill.name }} | PitchPro</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/app-theme.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/quote-card.css') }}">
+  <style>
+    :root{--bg:#0A0A0A;--card:#141414;--lime:#A3FF12;--text:#F5F5F5;--muted:#A1A1AA;--line:#2B2B2B}
+    *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:'Space Grotesk',sans-serif}a{color:inherit;text-decoration:none}
+    .app{min-height:100vh;display:flex}.sidebar{width:245px;flex-shrink:0;background:#0D0D0D;border-right:1px solid #222;padding:26px 16px;display:flex;flex-direction:column;gap:24px}.logo{padding:0 12px;font-size:26px;font-weight:800;letter-spacing:-1.3px}.logo span{color:var(--lime)}.nav-label{color:#666;font-size:10px;font-weight:700;letter-spacing:1.7px;padding:0 12px;margin-bottom:-12px}.nav{display:grid;gap:6px}.nav a{color:var(--muted);padding:12px;border-radius:10px;display:flex;gap:12px;align-items:center;font-size:14px}.nav a:hover,.nav a.active{background:#1C2414;color:var(--lime)}.sidebar-bottom{margin-top:auto;border-top:1px solid #262626;padding:18px 10px 0;display:flex;gap:11px;align-items:center}.avatar{width:38px;height:38px;display:grid;place-items:center;background:var(--lime);color:#101010;font-weight:800;border-radius:12px}.sidebar-bottom strong{display:block;font-size:13px}.sidebar-bottom small{color:var(--muted);font-size:11px}
+    .main{min-width:0;flex:1}.topbar{height:76px;padding:0 38px;border-bottom:1px solid #222;display:flex;align-items:center;justify-content:space-between}.crumb{color:var(--muted);font-size:13px}.crumb span{color:var(--lime)}.top-link{background:var(--lime);color:#101010;padding:10px 15px;border-radius:9px;font-weight:700;font-size:12px}.content{max-width:1240px;padding:42px 38px;margin:auto}.back{display:inline-flex;gap:8px;color:var(--muted);font-size:13px;margin-bottom:30px}.back:hover{color:var(--lime)}.eyebrow{color:var(--lime);font-size:11px;letter-spacing:2px;font-weight:700;text-transform:uppercase}.hero{display:grid;grid-template-columns:minmax(0,1fr) 370px;gap:42px;align-items:end;margin-bottom:34px}.hero h1{font-size:clamp(38px,5vw,64px);line-height:1;letter-spacing:-2.5px;margin:12px 0 15px}.hero p{max-width:700px;color:var(--muted);font-size:16px;line-height:1.65;margin:0}.meta{display:flex;gap:9px;flex-wrap:wrap;margin-top:22px}.pill{background:#202a16;color:var(--lime);border:1px solid #344720;border-radius:8px;padding:8px 11px;font-size:11px;font-weight:700}.video-card{background:#111;border:1px solid var(--line);border-radius:18px;padding:14px}.video-wrap{aspect-ratio:16/9;background:#080808;border-radius:11px;overflow:hidden}.video-wrap iframe{width:100%;height:100%;border:0}.video-card p{color:var(--muted);font-size:11px;margin:12px 4px 1px}.video-card a{color:var(--lime);font-weight:700}.layout{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(280px,.9fr);gap:18px}.panel{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:26px}.panel h2{font-size:22px;letter-spacing:-.8px;margin:0 0 18px}.panel h3{font-size:13px;letter-spacing:.4px;margin:25px 0 10px;color:var(--lime);text-transform:uppercase}.steps{display:grid;gap:12px;counter-reset:step}.step{display:grid;grid-template-columns:32px 1fr;gap:12px;align-items:start;color:#ddd;font-size:13px;line-height:1.55}.step:before{counter-increment:step;content:counter(step);display:grid;place-items:center;width:30px;height:30px;background:#202a16;border:1px solid #344720;color:var(--lime);border-radius:9px;font-weight:700}.checklist{display:grid;gap:10px;padding:0;margin:0;list-style:none}.checklist li{color:#ddd;font-size:13px;line-height:1.45;padding-left:23px;position:relative}.checklist li:before{content:'✓';position:absolute;left:0;color:var(--lime);font-weight:700}.mistakes li:before{content:'!';color:#ffb84d}.info-grid{display:grid;gap:12px}.info{padding:14px 15px;background:#1b1b1b;border-radius:11px}.info small{display:block;color:#777;text-transform:uppercase;letter-spacing:1.2px;font-size:9px;font-weight:700;margin-bottom:5px}.info strong{font-size:13px;line-height:1.4}.footer{text-align:center;color:#666;font-size:11px;padding:35px 0 8px}
+    .completion{display:flex;align-items:center;justify-content:space-between;gap:18px;background:linear-gradient(120deg,#1b2811,#141414);border:1px solid #3e5720;border-radius:16px;padding:20px 22px;margin:0 0 18px}.completion-copy h2{font-size:18px;margin:0 0 6px}.completion-copy p{color:var(--muted);font-size:12px;margin:0;line-height:1.5}.completion-copy strong{color:var(--lime)}.complete-btn{border:0;border-radius:10px;background:var(--lime);color:#101010;padding:13px 18px;font-weight:700;white-space:nowrap;cursor:pointer}.complete-btn:disabled{background:#2c3820;color:#a5bd83;cursor:not-allowed}.timer{display:block;color:var(--lime);font-size:11px;font-weight:700;margin-top:6px}
+    @media(max-width:900px){.sidebar{display:none}.hero,.layout{grid-template-columns:1fr}.content{padding:30px 18px}.topbar{padding:0 18px}.hero{gap:24px}.video-card{max-width:600px}.completion{align-items:flex-start;flex-direction:column}.complete-btn{width:100%}}
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <a class="logo" href="/">Pitch<span>Pro</span></a>
+      <div class="nav-label">TRAINING</div>
+      <nav class="nav">
+        <a href="/dashboard">⌂ <span>Dashboard</span></a>
+        <a class="active" href="/drills-library">⚽ <span>Drills Library</span></a>
+        <a href="/programs">▤ <span>Training Programs</span></a>
+        <a href="/ai-coach">✦ <span>AI Coach</span></a>
+        <a href="/tips">☼ <span>Tips &amp; Guides</span></a>
+      </nav>
+      <div class="nav-label">YOUR ACCOUNT</div>
+      <nav class="nav"><a href="/customize">◉ <span>Customize Profile</span></a><a href="/about">ⓘ <span>About PitchPro</span></a></nav>
+      <div class="sidebar-bottom"><div class="avatar">P</div><div><strong>PitchPro Player</strong><small>Keep getting better ⚽</small></div></div>
+    </aside>
+    <main class="main">
+      <header class="topbar"><div class="crumb">PITCHPRO / <span>DRILL DETAIL</span></div><a class="top-link" href="/ai-coach">ASK AI COACH ↗</a></header>
+      <div class="content">
+        <a class="back" href="/drills-library">← Back to drills library</a>
+        <section class="hero">
+          <div><div class="eyebrow">{{ drill.category }} / {{ drill.difficulty }}</div><h1>{{ drill.name }}<span style="color:var(--lime)">.</span></h1><p>{{ drill.summary }}</p><div class="meta"><span class="pill">{{ drill.duration }}</span><span class="pill">{{ drill.xp }}</span><span class="pill">{{ drill.category }}</span></div></div>
+          <div class="video-card"><div class="video-wrap"><iframe src="https://www.youtube.com/embed?listType=search&list={{ drill.video_query | replace(' ', '+') | urlencode }}" title="{{ drill.name }} video tutorial" allowfullscreen loading="lazy"></iframe></div><p>Watch a visual walkthrough, then try the movement at your own pace. <a href="https://www.youtube.com/results?search_query={{ drill.video_query | replace(' ', '+') | urlencode }}" target="_blank" rel="noopener">Open videos ↗</a></p></div>
+        </section>
+        <section class="completion" aria-live="polite">
+          <div class="completion-copy"><h2>Earn your proof of completion</h2><p>Stay on this drill for <strong>5 active minutes</strong>, then mark it complete to add {{ drill.xp }} to your dashboard.</p><span class="timer" id="drillTimer">5:00 remaining</span></div>
+          <button class="complete-btn" id="completeDrillBtn" data-slug="{{ slug }}" data-xp="{{ drill.xp|replace('+', '')|replace(' XP', '') }}" data-minutes="{{ drill.duration|replace(' min', '') }}" disabled>Complete drill</button>
+        </section>
+        <section class="layout">
+          <article class="panel"><h2>How to do it</h2><div class="steps">{% for step in drill.steps %}<div class="step">{{ step }}</div>{% endfor %}</div></article>
+          <aside class="panel"><h2>Training points</h2><div class="info-grid"><div class="info"><small>Equipment</small><strong>{{ drill.equipment }}</strong></div><div class="info"><small>Primary focus</small><strong>{{ drill.focus }}</strong></div></div><h3>Keep in mind</h3><ul class="checklist">{% for point in drill.points %}<li>{{ point }}</li>{% endfor %}</ul><h3>Common mistakes</h3><ul class="checklist mistakes">{% for mistake in drill.mistakes %}<li>{{ mistake }}</li>{% endfor %}</ul></aside>
+        </section>
+        <footer class="footer">PITCHPRO · TRAIN SMARTER. PLAY BETTER.</footer>
+      </div>
+    </main>
+  </div>
+  <script src="{{ url_for('static', filename='js/motivational-quotes.js') }}"></script>
+</body>
+<script type="module">
+  import { auth, db, onAuthStateChanged, doc, getDoc, updateDoc } from "{{ url_for('static', filename='js/firebase.js') }}";
+
+  const button = document.getElementById('completeDrillBtn');
+  const timerLabel = document.getElementById('drillTimer');
+  const slug = button.dataset.slug;
+  const xpAmount = Number(button.dataset.xp) || 0;
+  const trainingMinutes = Number(button.dataset.minutes) || 0;
+  const sessionKey = `pitchpro-drill-session-${slug}`;
+  const completedKey = (uid) => `pitchpro-drill-completed-${uid}-${slug}`;
+  const requiredSeconds = 5 * 60;
+  let activeSeconds = Number(sessionStorage.getItem(sessionKey) || 0);
+  let lastTick = Date.now();
+  let pageActive = !document.hidden;
+  let currentUser = null;
+
+  const updateTimer = () => {
+    const remaining = Math.max(0, requiredSeconds - activeSeconds);
+    timerLabel.textContent = activeSeconds >= requiredSeconds ? 'Ready to complete' : `${Math.floor(remaining / 60)}:${String(remaining % 60).padStart(2, '0')} remaining`;
+    if (activeSeconds >= requiredSeconds) button.disabled = false;
+  };
+
+  onAuthStateChanged(auth, async (user) => {
+    currentUser = user;
+    if (!user) return;
+    const snap = await getDoc(doc(db, 'users', user.uid));
+    const completedDrills = snap.exists() ? (snap.data().completedDrills || {}) : {};
+    if (completedDrills[slug] || localStorage.getItem(completedKey(user.uid)) === 'true') {
+      button.disabled = true;
+      button.textContent = 'Completed ✓';
+      timerLabel.textContent = 'Completed — XP already awarded';
+    }
+  });
+
+  document.addEventListener('visibilitychange', () => {
+    pageActive = !document.hidden;
+    lastTick = Date.now();
+  });
+
+  setInterval(() => {
+    const now = Date.now();
+    if (pageActive && activeSeconds < requiredSeconds) {
+      activeSeconds += Math.min(1, Math.floor((now - lastTick) / 1000));
+      sessionStorage.setItem(sessionKey, String(activeSeconds));
+      updateTimer();
+    }
+    lastTick = now;
+  }, 1000);
+
+  button.addEventListener('click', async () => {
+    if (activeSeconds < requiredSeconds || button.disabled) return;
+    if (!currentUser) {
+      alert('Please sign in to save your XP and proof of completion.');
+      return;
+    }
+    button.disabled = true;
+    button.textContent = 'Saving...';
+    try {
+      const ref = doc(db, 'users', currentUser.uid);
+      const snap = await getDoc(ref);
+      if (!snap.exists()) throw new Error('Player profile not found.');
+      const data = snap.data();
+      const completedDrills = data.completedDrills || {};
+      if (completedDrills[slug]) {
+        button.textContent = 'Completed ✓';
+        timerLabel.textContent = 'Completed — XP already awarded';
+        localStorage.setItem(completedKey(currentUser.uid), 'true');
+        return;
+      }
+      let xp = (data.xp || 0) + xpAmount;
+      let level = data.level || 1;
+      if (xp >= 100) { level += Math.floor(xp / 100); xp %= 100; }
+      completedDrills[slug] = true;
+      await updateDoc(ref, { xp, level, sessionsCompleted: (data.sessionsCompleted || 0) + 1, trainingMinutes: (data.trainingMinutes || 0) + trainingMinutes, completedDrills });
+      localStorage.setItem(completedKey(currentUser.uid), 'true');
+      sessionStorage.removeItem(sessionKey);
+      button.textContent = 'Completed ✓';
+      timerLabel.textContent = `Complete — ${xpAmount} XP added to your dashboard`;
+    } catch (error) {
+      console.error(error);
+      button.disabled = false;
+      button.textContent = 'Complete drill';
+      alert('We could not save your completion. Please try again.');
+    }
+  });
+
+  updateTimer();
+</script>
+</html>

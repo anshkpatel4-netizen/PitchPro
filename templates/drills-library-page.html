@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>
+   PitchPro | Training Library
+  </title>
+  <link href="https://fonts.googleapis.com" rel="preconnect"/>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+  <style>
+   :root{--bg:#0A0A0A;--card:#141414;--lime:#A3FF12;--text:#F5F5F5;--muted:#A1A1AA;--line:#2B2B2B}
+
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--text);font-family:'Space Grotesk',sans-serif}a{color:inherit;text-decoration:none}button,input,select{font:inherit}
+.app{min-height:100vh;display:flex}.sidebar{width:245px;flex-shrink:0;background:#0D0D0D;border-right:1px solid #222;padding:26px 16px;display:flex;flex-direction:column;gap:24px}.logo{padding:0 12px;font-size:26px;font-weight:800;letter-spacing:-1.3px}.logo span{color:var(--lime)}.nav-label{color:#666;font-size:10px;font-weight:700;letter-spacing:1.7px;padding:0 12px;margin-bottom:-12px}.nav{display:grid;gap:6px}.nav a{color:var(--muted);padding:12px;border-radius:10px;display:flex;gap:12px;align-items:center;font-size:14px;transition:.2s}.nav a:hover,.nav a.active{background:#1C2414;color:var(--lime)}.sidebar-bottom{margin-top:auto;border-top:1px solid #262626;padding:18px 10px 0;display:flex;gap:11px;align-items:center}.avatar{width:38px;height:38px;display:grid;place-items:center;background:var(--lime);color:#101010;font-weight:800;border-radius:12px}.sidebar-bottom strong{display:block;font-size:13px}.sidebar-bottom small{color:var(--muted);font-size:11px}
+.main{min-width:0;flex:1}.topbar{height:76px;padding:0 38px;border-bottom:1px solid #222;display:flex;align-items:center;justify-content:space-between}.crumb{color:var(--muted);font-size:13px}.crumb span{color:var(--lime)}.top-actions{display:flex;align-items:center;gap:14px}.status{color:var(--muted);font-size:12px}.status:before{content:"";display:inline-block;width:7px;height:7px;background:var(--lime);border-radius:50%;margin-right:8px}.top-link{background:var(--lime);color:#101010;padding:10px 15px;border-radius:9px;font-weight:700;font-size:12px}
+.content{max-width:1320px;padding:38px;margin:auto}.eyebrow{color:var(--lime);font-size:11px;letter-spacing:2px;font-weight:700;text-transform:uppercase}.hero{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;margin-bottom:30px}h1{font-size:clamp(32px,4vw,46px);line-height:1.05;letter-spacing:-2px;margin:10px 0 12px}.hero p{color:var(--muted);margin:0}.hero-stat{background:var(--card);border:1px solid var(--line);padding:16px 20px;border-radius:14px;min-width:150px}.hero-stat strong{display:block;font-size:24px;color:var(--lime)}.hero-stat small{color:var(--muted);font-size:11px}
+.search-panel{background:var(--card);border:1px solid var(--line);padding:14px;border-radius:15px;display:flex;gap:12px;margin-bottom:34px}.search-wrap{flex:1;position:relative}.search-wrap span{position:absolute;left:14px;top:12px;color:#777}.search-wrap input{width:100%;background:#202020;border:1px solid #303030;color:var(--text);padding:12px 14px 12px 40px;border-radius:9px;outline:none}.search-wrap input:focus,select:focus{border-color:var(--lime)}.search-panel select{background:#202020;border:1px solid #303030;color:var(--text);padding:0 13px;border-radius:9px;min-width:145px;outline:none}
+.section-head{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;margin:0 0 16px}.section-head h2{font-size:23px;margin:0 0 5px;letter-spacing:-.7px}.section-head p{color:var(--muted);font-size:13px;margin:0}.section-link{color:var(--lime);font-size:12px;font-weight:700}
+.skill-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}.skill-card{background:var(--card);border:1px solid var(--line);padding:19px;border-radius:15px;transition:transform .2s,border-color .2s}.skill-card:hover{transform:translateY(-3px);border-color:#6b8e2a}.skill-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}.skill-icon{width:43px;height:43px;display:grid;place-items:center;border-radius:12px;background:#222d16;color:var(--lime);font-size:22px}.skill-state{color:var(--lime);font-size:10px;font-weight:700;letter-spacing:.7px}.skill-card h3{margin:0 0 6px;font-size:17px}.skill-card p{color:var(--muted);font-size:12px;margin:0 0 16px;min-height:32px}.skill-progress{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:8px}.track{height:5px;background:#303030;border-radius:10px;overflow:hidden}.fill{height:100%;background:var(--lime);border-radius:10px}
+.library-section{margin-top:42px}.drill-list{display:grid;gap:10px}.drill{display:grid;grid-template-columns:54px minmax(0,1fr) auto auto;align-items:center;gap:16px;background:var(--card);border:1px solid var(--line);border-radius:13px;padding:15px 17px;transition:border-color .2s}.drill:hover{border-color:#596f32}.drill-icon{width:54px;height:54px;border-radius:12px;display:grid;place-items:center;background:#20251a;color:var(--lime);font-size:23px}.drill h3{margin:0 0 5px;font-size:15px}.drill p{margin:0;color:var(--muted);font-size:12px}.drill-meta{text-align:right;min-width:84px}.drill-meta strong{display:block;font-size:12px}.drill-meta small{color:var(--muted);font-size:11px}.xp-pill{background:#202a16;color:var(--lime);border:1px solid #344720;border-radius:8px;padding:8px 10px;white-space:nowrap;font-size:11px;font-weight:700}.empty{display:none;color:var(--muted);padding:28px;text-align:center;border:1px dashed #333;border-radius:12px}
+.rating-section{margin-top:46px;padding:26px;background:#111;border:1px solid var(--line);border-radius:20px}.rating-heading{margin-bottom:20px}.rating-heading h2{margin:8px 0;font-size:27px;letter-spacing:-1px}.rating-heading h2 span{color:var(--lime)}.rating-heading p{color:var(--muted);margin:0;font-size:13px}.player-card{display:grid;grid-template-columns:220px minmax(0,1fr);gap:28px;padding:27px;border:1px solid #353535;border-radius:16px;background:radial-gradient(ellipse at 10% 10%,#26351b 0%,transparent 55%),linear-gradient(135deg,#1a1a1a,#0b0b0b)}.player-main{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;border-right:1px solid #303030;padding-right:24px}.overall{color:var(--lime);font-size:78px;font-weight:700;line-height:1;letter-spacing:-5px}.position{font-size:21px;font-weight:700;margin-top:7px}.rating-caption{color:var(--muted);font-size:10px;letter-spacing:1.8px;margin-top:4px}.player-name{font-size:18px;font-weight:700;margin-top:22px}.player-rank{margin-top:10px;color:var(--lime);border:1px solid #6a912a;border-radius:30px;padding:7px 12px;font-size:10px;letter-spacing:1px;font-weight:700}.attributes{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:25px 30px;align-content:center}.attribute-top{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:9px}.attribute-top span:first-child{color:var(--muted);font-size:12px;font-weight:700;letter-spacing:1px}.attribute-value{font-size:20px;font-weight:700}.attribute-track{height:6px;background:#303030;border-radius:8px;overflow:hidden}.attribute-fill{height:100%;background:var(--lime);border-radius:8px}.rating-note{text-align:center;color:#777;font-size:11px;line-height:1.6;margin:16px 0 0}.footer{text-align:center;color:#666;font-size:11px;padding:28px 0 8px}
+@media(max-width:1100px){.skill-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.content{padding:28px}}
+@media(max-width:760px){.sidebar{display:none}.topbar{padding:0 18px;height:64px}.content{padding:25px 16px}.hero{align-items:flex-start;flex-direction:column}.hero-stat{min-width:0;width:100%}.search-panel{flex-direction:column}.search-panel select{min-height:44px}.skill-grid{grid-template-columns:1fr 1fr;gap:10px}.skill-card{padding:14px}.drill{grid-template-columns:46px minmax(0,1fr) auto;gap:11px;padding:12px}.drill-icon{width:46px;height:46px}.drill-meta{display:none}.xp-pill{font-size:10px;padding:7px}.rating-section{padding:17px}.player-card{grid-template-columns:1fr;padding:22px;gap:24px}.player-main{border-right:0;border-bottom:1px solid #303030;padding:0 0 23px}.overall{font-size:68px}.attributes{gap:20px 16px}}
+@media(max-width:420px){.skill-grid{grid-template-columns:1fr}.attributes{gap:18px 12px}.attribute-top span:first-child{font-size:10px}}
+  </style>
+ </head>
+ <body>
+  <div class="app">
+   <aside class="sidebar">
+    <a class="logo" href="/">
+     Pitch
+     <span>
+      Pro
+     </span>
+    </a>
+    <div class="nav-label">
+     TRAINING
+    </div>
+    <nav class="nav">
+     <a href="/dashboard">
+      ⌂
+      <span>
+       Dashboard
+      </span>
+     </a>
+     <a class="active" href="/drills">
+      ⚽
+      <span>
+       Drills Library
+      </span>
+     </a>
+     <a href="/programs">
+      ▤
+      <span>
+       Training Programs
+      </span>
+     </a>
+     <a href="/ai-coach">
+      ✦
+      <span>
+       AI Coach
+      </span>
+     </a>
+     <a href="/tips">
+      ☼
+      <span>
+       Tips &amp; Guides
+      </span>
+     </a>
+    </nav>
+    <div class="nav-label">
+     YOUR ACCOUNT
+    </div>
+    <nav class="nav">
+     <a href="/customize">
+      ◉
+      <span>
+       Customize Profile
+      </span>
+     </a>
+     <a href="/about">
+      ⓘ
+      <span>
+       About PitchPro
+      </span>
+     </a>
+    </nav>
+    <div class="sidebar-bottom">
+     <div class="avatar">
+      P
+     </div>
+     <div>
+      <strong>
+       PitchPro Player
+      </strong>
+      <small>
+       Keep getting better ⚽
+      </small>
+     </div>
+    </div>
+   </aside>
+   <main class="main">
+    <header class="topbar">
+     <div class="crumb">
+      PITCHPRO /
+      <span>
+       TRAINING LIBRARY
+      </span>
+     </div>
+     <div class="top-actions">
+      <span class="status">
+       Training hub
+      </span>
+      <a class="top-link" href="/ai-coach">
+       ASK AI COACH &nearrow;
+      </a>
+     </div>
+    </header>
+    <div class="content">
+     <section class="hero">
+      <div>
+       <div class="eyebrow">
+        YOUR DEVELOPMENT STARTS HERE
+       </div>
+       <h1>
+        Training Library
+        <span style="color:var(--lime)">
+         .
+        </span>
+       </h1>
+       <p>
+        Find your next drill. Build your skills. Level up your game.
+       </p>
+      </div>
+      <div class="hero-stat">
+       <strong id="drillCount">
+        8 DRILLS
+       </strong>
+       <small>
+        READY TO EXPLORE
+       </small>
+      </div>
+     </section>
+     <section aria-label="Search and filter drills" class="search-panel">
+      <div class="search-wrap">
+       <span>
+        &telrec;
+       </span>
+       <input aria-label="Search drills" id="searchInput" placeholder="Search drills, skills, equipment..." type="search"/>
+      </div>
+      <select aria-label="Filter by skill" id="categoryFilter">
+       <option value="all">
+        All skills
+       </option>
+       <option value="Finishing">
+        Finishing
+       </option>
+       <option value="Dribbling">
+        Dribbling
+       </option>
+       <option value="Passing">
+        Passing
+       </option>
+       <option value="Game IQ">
+        Game IQ
+       </option>
+      </select>
+      <select aria-label="Filter by difficulty" id="difficultyFilter">
+       <option value="all">
+        All levels
+       </option>
+       <option value="Beginner">
+        Beginner
+       </option>
+       <option value="Intermediate">
+        Intermediate
+       </option>
+       <option value="Advanced">
+        Advanced
+       </option>
+      </select>
+     </section>
+     <section>
+      <div class="section-head">
+       <div>
+        <h2>
+         Your Skill Tree
+        </h2>
+        <p>
+         Choose a path and build your game one skill at a time.
+        </p>
+       </div>
+       <a class="section-link" href="#available-drills">
+        EXPLORE DRILLS &darr;
+       </a>
+      </div>
+      <div class="skill-grid">
+       <a class="skill-card" data-skill-link="Finishing" href="#available-drills">
+        <div class="skill-top">
+         <div class="skill-icon">
+          ◎
+         </div>
+         <span class="skill-state">
+          START HERE
+         </span>
+        </div>
+        <h3>
+         Finishing
+        </h3>
+        <p>
+         Composure, accuracy, and putting chances away.
+        </p>
+        <div class="skill-progress">
+         <span>
+          Foundation path
+         </span>
+         <span>
+          1 / 3
+         </span>
+        </div>
+        <div class="track">
+         <div class="fill" style="width:33%">
+         </div>
+        </div>
+       </a>
+       <a class="skill-card" data-skill-link="Dribbling" href="#available-drills">
+        <div class="skill-top">
+         <div class="skill-icon">
+          &nearrow;
+         </div>
+         <span class="skill-state">
+          SKILL PATH
+         </span>
+        </div>
+        <h3>
+         Dribbling
+        </h3>
+        <p>
+         Close control, changes of direction, and 1v1s.
+        </p>
+        <div class="skill-progress">
+         <span>
+          Foundation path
+         </span>
+         <span>
+          0 / 2
+         </span>
+        </div>
+        <div class="track">
+         <div class="fill" style="width:0%">
+         </div>
+        </div>
+       </a>
+       <a class="skill-card" data-skill-link="Passing" href="#available-drills">
+        <div class="skill-top">
+         <div class="skill-icon">
+          &rlarr;
+         </div>
+         <span class="skill-state">
+          SKILL PATH
+         </span>
+        </div>
+        <h3>
+         Passing
+        </h3>
+        <p>
+         Clean technique, first touch, and quick combinations.
+        </p>
+        <div class="skill-progress">
+         <span>
+          Foundation path
+         </span>
+         <span>
+          0 / 2
+         </span>
+        </div>
+        <div class="track">
+         <div class="fill" style="width:0%">
+         </div>
+        </div>
+       </a>
+       <a class="skill-card" data-skill-link="Game IQ" href="#available-drills">
+        <div class="skill-top">
+         <div class="skill-icon">
+          ⌁
+         </div>
+         <span class="skill-state">
+          SKILL PATH
+         </span>
+        </div>
+        <h3>
+         Game Intelligence
+        </h3>
+        <p>
+         Scanning, movement, and making smarter decisions.
+        </p>
+        <div class="skill-progress">
+         <span>
+          Foundation path
+         </span>
+         <span>
+          0 / 1
+         </span>
+        </div>
+        <div class="track">
+         <div class="fill" style="width:0%">
+         </div>
+        </div>
+       </a>
+      </div>
+     </section>
+     <section class="library-section" id="available-drills">
+      <div class="section-head">
+       <div>
+        <h2>
+         Available Drills
+        </h2>
+        <p>
+         Short, focused sessions to sharpen your fundamentals.
+        </p>
+       </div>
+       <span class="section-link">
+        8 TRAINING OPTIONS
+       </span>
+      </div>
+      <div class="drill-list" id="drillList">
+       <article class="drill" data-category="Finishing" data-difficulty="Beginner" data-search="one touch finishing shooting goal ball accuracy">
+        <div class="drill-icon">
+         ◎
+        </div>
+        <div>
+         <h3>
+          One-Touch Finishing
+         </h3>
+         <p>
+          Finishing &middot; Ball and goal &middot; Focus on clean contact
+         </p>
+        </div>
+        <div class="drill-meta">
+         <strong>
+          10 min
+         </strong>
+         <small>
+          Beginner
+         </small>
+        </div>
+        <span class="xp-pill">
+         +10 XP
+        </span>
+       </article>
+       <article class="drill" data-category="Finishing" data-difficulty="Intermediate" data-search="weak foot finishing shooting goal ball">
+        <div class="drill-icon">
+         &nearrow;
+        </div>
+        <div>
+         <h3>
+          Weak-Foot Finishing
+         </h3>
+         <p>
+          Finishing &middot; Ball and goal &middot; Build comfort on both feet
+         </p>
+        </div>
+        <div class="drill-meta">
+         <strong>
+          12 min
+         </strong>
+         <small>
+          Intermediate
+         </small>
+        </div>
+        <span class="xp-pill">
+         +15 XP
+        </span>
+       </article>
+       <article class="drill" data-category="Finishing" data-difficulty="Beginner" data-search="first touch shot finishing ball goal">
+        <div class="drill-icon">
+         ◉
+        </div>
+        <div>
+         <h3>
+          First-Touch Shooting
+         </h3>
+         <p>
+          Finishing &middot; Ball and goal &middot; Set the ball into your path
+         </p>
+        </div>
+        <div class="drill-meta">
+         <strong>
+          10 min
+         </strong>
+         <small>
+          Beginner
+         </small>
+        </div>
+        <span class="xp-pill">
+         +10 XP
+        </span>
+       </article>
+       <article class="drill" data-category="Dribbling" data-difficulty="Beginner" data-search="cone slalom dribbling cones ball close control">
+        <div class="drill-icon">
+         ⌁
+        </div>
+        <div>
+         <h3>
+          Cone Slalom
+         </h3>
+         <p>
+          Dribbling &middot; Ball and cones &middot; Keep touches controlled
+         </p>
+        </div>
+        <div class="drill-meta">
+         <strong>
+          8 min
+         </strong>
+         <small>
+          Beginner
+         </small>
+        </div>
+        <span class="xp-pill">
+         +10 XP
+        </span>
+       </article>
+       <article class="drill" data-category="Dribbling" data-difficulty="Intermediate" data-search="change direction dribbling feints ball cones">
+        <div class="drill-icon">
+         ↯
+        </div>
+        <div>
+         <h3>
+          Change-of-Direction Moves
+         </h3>
+         <p>
+          Dribbling &middot; Ball and cones &middot; Accelerate after each turn
+         </p>
+        </div>
+        <div class="drill-meta">
+         <strong>
+          12 min
+         </strong>
+         <small>
+          Intermediate
+         </small>
+        </div>
+        <span class="xp-pill">
+         +15 XP
+        </span>
+       </article>
+       <article class="drill" data-category="Passing" data-difficulty="Beginner" data-search="wall passing first touch ball wall passing">
+        <div class="drill-icon">
+         &rlarr;
+        </div>
+        <div>
+         <h3>
+          Wall Passing
+         </h3>
+         <p>
+          Passing &middot; Ball and safe wall &middot; Alternate feet
+         </p>
+        </div>
+        <div class="drill-meta">
+         <strong>
+          8 min
+         </strong>
+         <small>
+          Beginner
+         </small>
+        </div>
+        <span class="xp-pill">
+         +10 XP
+        </span>
+       </article>
+       <article class="drill" data-category="Passing" data-difficulty="Intermediate" data-search="receive across body passing first touch teammate">
+        <div class="drill-icon">
+         &harr;
+        </div>
+        <div>
+         <h3>
+          Receive Across the Body
+         </h3>
+         <p>
+          Passing &middot; Ball and partner or wall &middot; Open your body
+         </p>
+        </div>
+        <div class="drill-meta">
+         <strong>
+          10 min
+         </strong>
+         <small>
+          Intermediate
+         </small>
+        </div>
+        <span class="xp-pill">
+         +15 XP
+        </span>
+       </article>
+       <article class="drill" data-category="Game IQ" data-difficulty="Beginner" data-search="scanning shoulder check game intelligence awareness">
+        <div class="drill-icon">
+         &target;
+        </div>
+        <div>
+         <h3>
+          Shoulder-Check Routine
+         </h3>
+         <p>
+          Game IQ &middot; Partner or open space &middot; Scan before receiving
+         </p>
+        </div>
+        <div class="drill-meta">
+         <strong>
+          6 min
+         </strong>
+         <small>
+          Beginner
+         </small>
+        </div>
+        <span class="xp-pill">
+         +10 XP
+        </span>
+       </article>
+      </div>
+      <div class="empty" id="emptyState">
+       No drills match those filters. Try another search.
+      </div>
+     </section>
+     <section class="rating-section" id="player-rating">
+      <div class="rating-heading">
+       <div class="eyebrow">
+        PLAYER PROFILE
+       </div>
+       <h2>
+        Your Player
+        <span>
+         Rating
+        </span>
+       </h2>
+       <p>
+        An EA FC-inspired snapshot of your football attributes.
+       </p>
+      </div>
+      <div class="player-card">
+       <div class="player-main">
+        <div class="overall" id="playerOverall">
+         99
+        </div>
+        <div class="position" id="playerPosition">
+         ST
+        </div>
+        <div class="rating-caption">
+         OVERALL RATING
+        </div>
+        <div class="player-name" id="playerName">
+         PITCHPRO PLAYER
+        </div>
+        <div class="player-rank" id="playerRank">
+         RISING PROSPECT
+        </div>
+       </div>
+       <div class="attributes">
+        <div class="attribute">
+         <div class="attribute-top">
+          <span>
+           PAC &middot; PACE
+          </span>
+          <span class="attribute-value" id="statPAC">
+           99
+          </span>
+         </div>
+         <div class="attribute-track">
+          <div class="attribute-fill" id="barPAC" style="width:78%">
+          </div>
+         </div>
+        </div>
+        <div class="attribute">
+         <div class="attribute-top">
+          <span>
+           SHO &middot; SHOOTING
+          </span>
+          <span class="attribute-value" id="statSHO">
+           99
+          </span>
+         </div>
+         <div class="attribute-track">
+          <div class="attribute-fill" id="barSHO" style="width:76%">
+          </div>
+         </div>
+        </div>
+        <div class="attribute">
+         <div class="attribute-top">
+          <span>
+           PAS &middot; PASSING
+          </span>
+          <span class="attribute-value" id="statPAS">
+           99
+          </span>
+         </div>
+         <div class="attribute-track">
+          <div class="attribute-fill" id="barPAS" style="width:65%">
+          </div>
+         </div>
+        </div>
+        <div class="attribute">
+         <div class="attribute-top">
+          <span>
+           DRI &middot; DRIBBLING
+          </span>
+          <span class="attribute-value" id="statDRI">
+           99
+          </span>
+         </div>
+         <div class="attribute-track">
+          <div class="attribute-fill" id="barDRI" style="width:74%">
+          </div>
+         </div>
+        </div>
+        <div class="attribute">
+         <div class="attribute-top">
+          <span>
+           DEF &middot; DEFENDING
+          </span>
+          <span class="attribute-value" id="statDEF">
+           99
+          </span>
+         </div>
+         <div class="attribute-track">
+          <div class="attribute-fill" id="barDEF" style="width:32%">
+          </div>
+         </div>
+        </div>
+        <div class="attribute">
+         <div class="attribute-top">
+          <span>
+           PHY &middot; PHYSICAL
+          </span>
+          <span class="attribute-value" id="statPHY">
+           99
+          </span>
+         </div>
+         <div class="attribute-track">
+          <div class="attribute-fill" id="barPHY" style="width:68%">
+          </div>
+         </div>
+        </div>
+       </div>
+      </div>
+      <p class="rating-note">
+       These are demo ratings, not measured abilities. Connect player profiles and skill assessments to Firebase to make ratings personal and meaningful.
+      </p>
+     </section>
+     <footer class="footer">
+      PitchPro &middot; Train smarter. Play
+     </footer>
+    </div>
+   </main>
+  </div>
+  <script>
+   const searchInput=document.getElementById("searchInput"),categoryFilter=document.getElementById("categoryFilter"),difficultyFilter=document.getElementById("difficultyFilter"),drills=[...document.querySelectorAll(".drill")],emptyState=document.getElementById("emptyState"),drillCount=document.getElementById("drillCount");
+function filterDrills(){const q=searchInput.value.trim().toLowerCase(),cat=categoryFilter.value,diff=difficultyFilter.value;let visible=0;drills.forEach(d=>{const text=(d.innerText+" "+d.dataset.search).toLowerCase(),show=text.includes(q)&&(cat==="all"||d.dataset.category===cat)&&(diff==="all"||d.dataset.difficulty===diff);d.style.display=show?"grid":"none";if(show)visible++});emptyState.style.display=visible?"none":"block";drillCount.textContent=visible+(visible===1?" DRILL":" DRILLS")}
+searchInput.addEventListener("input",filterDrills);categoryFilter.addEventListener("change",filterDrills);difficultyFilter.addEventListener("change",filterDrills);
+document.querySelectorAll("[data-skill-link]").forEach(link=>link.addEventListener("click",()=>{categoryFilter.value=link.dataset.skillLink;filterDrills()}));
+  </script>
+ </body>
+</html>

@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PitchPro Programs</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/public-polish.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/quote-card.css') }}">
+  <style>
+    :root {
+      --bg: #0A0A0A;
+      --card: #141414;
+      --lime: #A3FF12;
+      --text: #F5F5F5;
+      --muted: #A1A1AA;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      overflow-x: hidden;
+    }
+
+    h1, h2, h3, h4 {
+      font-family: 'Space Grotesk', sans-serif;
+      letter-spacing: -0.5px;
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    section {
+      padding: 7rem 8vw;
+    }
+
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.2rem 8vw;
+      background: rgba(10,10,10,0.88);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .logo {
+      font-size: 1.5rem;
+      color: var(--lime);
+      font-weight: 700;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    .nav-links a {
+      position: relative;
+      padding-bottom: 6px;
+      transition: color 0.3s ease;
+    }
+
+    .nav-links a::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      width: 100%;
+      height: 2px;
+      background: linear-gradient(90deg, var(--lime), #5EEAD4);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.3s ease;
+    }
+
+    .nav-links a:hover {
+      color: var(--lime);
+    }
+
+    .nav-links a:hover::after {
+      transform: scaleX(1);
+    }
+
+    .hero {
+      min-height: 80vh;
+      display: grid;
+      grid-template-columns: 1.1fr 1fr;
+      gap: 4rem;
+      align-items: center;
+    }
+
+    .hero h1 {
+      font-size: clamp(3rem, 7vw, 6rem);
+      line-height: 0.95;
+      margin-bottom: 1.5rem;
+    }
+
+    .hero h1 span {
+      color: var(--lime);
+    }
+
+    .hero p {
+      color: var(--muted);
+      font-size: 1.05rem;
+      line-height: 1.8;
+      max-width: 620px;
+      margin-bottom: 2rem;
+    }
+
+    .hero-card {
+      background: linear-gradient(145deg, rgba(163,255,18,0.12), rgba(255,255,255,0.02));
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 28px;
+      padding: 3rem;
+      box-shadow: 0 30px 60px rgba(0,0,0,0.45);
+    }
+
+    .hero-card h3 {
+      margin-bottom: 1.2rem;
+      color: var(--lime);
+      font-size: 1.5rem;
+    }
+
+    .hero-card p {
+      color: var(--muted);
+      margin-bottom: 1rem;
+    }
+
+    .cta-row {
+      display: flex;
+      gap: 1rem;
+      margin-top: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .cta {
+      padding: 1rem 2rem;
+      border-radius: 999px;
+      background: var(--lime);
+      color: #000;
+      font-weight: 700;
+      transition: all .25s ease;
+    }
+
+    .cta:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 30px rgba(163,255,18,0.35);
+    }
+
+    .secondary-btn {
+      padding: 1rem 2rem;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.12);
+      color: var(--text);
+      transition: all .25s ease;
+    }
+
+    .secondary-btn:hover {
+      border-color: rgba(163,255,18,0.45);
+      color: var(--lime);
+    }
+
+    .section-header {
+      margin-bottom: 4rem;
+      max-width: 760px;
+    }
+
+    .section-header h2 {
+      font-size: clamp(2.2rem, 5vw, 4rem);
+      margin-bottom: 1rem;
+    }
+
+    .section-header p {
+      color: var(--muted);
+      line-height: 1.8;
+      font-size: 1rem;
+    }
+
+    .programs-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 2rem;
+    }
+
+    .program-card {
+      background: var(--card);
+      border-radius: 24px;
+      padding: 2.4rem;
+      border: 1px solid rgba(255,255,255,0.06);
+      transition: transform .25s ease, border-color .25s ease, box-shadow .25s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .program-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at top right, rgba(163,255,18,0.12), transparent 45%);
+      pointer-events: none;
+    }
+
+    .program-card:hover {
+      transform: translateY(-8px);
+      border-color: rgba(163,255,18,0.35);
+      box-shadow: 0 0 0 1px rgba(163,255,18,0.12), 0 18px 40px rgba(163,255,18,0.14);
+    }
+
+    .program-card h3 {
+      font-size: 1.8rem;
+      margin-bottom: 1rem;
+      color: var(--lime);
+    }
+
+    .program-card p {
+      color: var(--muted);
+      line-height: 1.8;
+      margin-bottom: 1.4rem;
+    }
+
+    .pill {
+      display: inline-block;
+      background: rgba(163,255,18,0.12);
+      color: var(--lime);
+      padding: 0.4rem 0.8rem;
+      border-radius: 999px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      margin-bottom: 1.4rem;
+    }
+
+    .program-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.7rem;
+      color: var(--text);
+    }
+
+    .program-list span {
+      color: var(--muted);
+    }
+
+    .timeline {
+      display: grid;
+      gap: 1.6rem;
+      margin-top: 4rem;
+    }
+
+    .timeline-step {
+      background: var(--card);
+      border-left: 4px solid var(--lime);
+      padding: 2rem;
+      border-radius: 0 18px 18px 0;
+    }
+
+    .timeline-step h4 {
+      margin-bottom: 0.8rem;
+      font-size: 1.3rem;
+    }
+
+    .timeline-step p {
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1.5rem;
+      margin-top: 4rem;
+    }
+
+    .stat-box {
+      background: var(--card);
+      padding: 2rem;
+      border-radius: 20px;
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .stat-box h2 {
+      color: var(--lime);
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .stat-box p {
+      color: var(--muted);
+    }
+
+    .philosophy {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      align-items: stretch;
+    }
+
+    .philosophy-card {
+      background: var(--card);
+      border-radius: 24px;
+      padding: 2.5rem;
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .philosophy-card h3 {
+      color: var(--lime);
+      margin-bottom: 1rem;
+      font-size: 1.7rem;
+    }
+
+    .philosophy-card p {
+      color: var(--muted);
+      line-height: 1.8;
+    }
+
+    .final-cta {
+      text-align: center;
+      padding: 8rem 8vw;
+    }
+
+    .final-cta h2 {
+      font-size: clamp(2.5rem, 6vw, 5rem);
+      margin-bottom: 1rem;
+    }
+
+    .final-cta h2 span {
+      color: var(--lime);
+    }
+
+    .final-cta p {
+      color: var(--muted);
+      max-width: 760px;
+      margin: 0 auto 2rem;
+      line-height: 1.8;
+    }
+
+    footer {
+      border-top: 1px solid rgba(255,255,255,0.08);
+      padding: 3rem 8vw;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    @media (max-width: 900px) {
+      .hero,
+      .philosophy {
+        grid-template-columns: 1fr;
+      }
+
+      .hero h1 {
+        font-size: 3.6rem;
+      }
+
+      section {
+        padding: 5rem 7vw;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="navbar">
+    <div class="logo">PitchPro</div>
+
+    <div class="nav-links">
+      <a href="#development">development</a>
+      <a href="#programs">programs</a>
+      <a href="#pathway">pathway</a>
+      <a href="#mindset">mindset</a>
+    </div>
+  </nav>
+
+  <section class="hero">
+    <div>
+      <h1>Programs built for <span>real development.</span></h1>
+
+      <p>
+        PitchPro programs are designed around long-term player growth — not shortcuts, hype, or random drills. Every session has a purpose. Every age group trains differently. Every phase builds toward the next.
+      </p>
+
+      <div class="cta-row">
+        <a href="#programs" class="cta">Explore Programs</a>
+        <a href="#pathway" class="secondary-btn">View Development Path</a>
+      </div>
+    </div>
+
+    <div class="hero-card">
+      <h3>What makes PitchPro different?</h3>
+
+      <p>→ Technical repetition with purpose</p>
+      <p>→ Game-speed decision making</p>
+      <p>→ Position-specific growth</p>
+      <p>→ Structured progression systems</p>
+      <p>→ Long-term athlete development</p>
+      <p>→ Confidence through consistency</p>
+    </div>
+  </section>
+
+  <section id="programs">
+    <div class="section-header">
+      <h2>Training Programs</h2>
+      <p>
+        Every PitchPro program focuses on a different stage of development. Younger players learn confidence and comfort on the ball. Older players train intensity, speed of play, tactical understanding, and composure under pressure.
+      </p>
+    </div>
+
+    <div class="programs-grid">
+
+      <div class="program-card">
+        <div class="pill">AGES 6–9</div>
+        <h3>Foundation Training</h3>
+        <p>
+          Young players develop balance, coordination, comfort on the ball, and confidence in movement. Sessions are energetic, technical, and built around repetition without losing creativity.
+        </p>
+
+        <div class="program-list">
+          <div>• Ball familiarity <span>through fun repetition</span></div>
+          <div>• 1v1 confidence <span>without fear of mistakes</span></div>
+          <div>• Athletic movement <span>and coordination basics</span></div>
+          <div>• Introduction to teamwork <span>and spacing</span></div>
+        </div>
+      </div>
+
+      <div class="program-card">
+        <div class="pill">AGES 9–13</div>
+        <h3>Ball Mastery</h3>
+        <p>
+          This phase focuses heavily on touches, weak foot development, quick changes of direction, and technical consistency under pressure.
+        </p>
+
+        <div class="program-list">
+          <div>• Tight-space dribbling <span>under pressure</span></div>
+          <div>• Passing patterns <span>with movement</span></div>
+          <div>• Weak foot training <span>every session</span></div>
+          <div>• Scanning habits <span>before receiving</span></div>
+        </div>
+      </div>
+
+      <div class="program-card">
+        <div class="pill">AGES 12–16</div>
+        <h3>Game Intelligence</h3>
+        <p>
+          Players begin learning how to think faster, move smarter, and recognize patterns before the ball arrives.
+        </p>
+
+        <div class="program-list">
+          <div>• Decision-making <span>under time pressure</span></div>
+          <div>• Positioning principles <span>in all phases</span></div>
+          <div>• Tactical understanding <span>beyond formations</span></div>
+          <div>• Communication habits <span>and leadership</span></div>
+        </div>
+      </div>
+
+      <div class="program-card">
+        <div class="pill">AGES 15–18</div>
+        <h3>Elite Preparation</h3>
+        <p>
+          Advanced training focused on intensity, speed of play, composure, and preparing players for elite competition environments.
+        </p>
+
+        <div class="program-list">
+          <div>• High-speed combination play</div>
+          <div>• Competitive mentality development</div>
+          <div>• Tactical execution under fatigue</div>
+          <div>• Match realism and pressure scenarios</div>
+        </div>
+      </div>
+
+      <div class="program-card">
+        <div class="pill">AGES 18+</div>
+        <h3>Performance Pathway</h3>
+        <p>
+          Older players focus on consistency, professionalism, recovery, and maximizing long-term performance.
+        </p>
+
+        <div class="program-list">
+          <div>• Position-specific refinement</div>
+          <div>• Strength and recovery systems</div>
+          <div>• Video analysis and review</div>
+          <div>• Career-focused growth planning</div>
+        </div>
+      </div>
+
+      <div class="program-card">
+        <div class="pill">ALL AGES</div>
+        <h3>Mindset & Leadership</h3>
+        <p>
+          Technical ability matters, but mentality separates players long-term. PitchPro emphasizes discipline, confidence, communication, and accountability.
+        </p>
+
+        <div class="program-list">
+          <div>• Leadership habits</div>
+          <div>• Competitive confidence</div>
+          <div>• Resilience after mistakes</div>
+          <div>• Long-term growth mindset</div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <section id="development">
+    <div class="section-header">
+      <h2>Development Philosophy</h2>
+      <p>
+        PitchPro believes development should feel progressive. Every stage prepares players for the next level instead of rushing them through the process.
+      </p>
+    </div>
+
+    <div class="philosophy">
+      <div class="philosophy-card">
+        <h3>Train with purpose</h3>
+        <p>
+          Sessions are built around clear goals instead of random exercises. Every drill should connect to real match situations and player understanding.
+        </p>
+      </div>
+
+      <div class="philosophy-card">
+        <h3>Build complete players</h3>
+        <p>
+          Great development combines technique, awareness, confidence, fitness, mentality, and consistency. The best players are complete players.
+        </p>
+      </div>
+    </div>
+
+    <div class="stats">
+      <div class="stat-box">
+        <h2>5+</h2>
+        <p>structured development phases</p>
+      </div>
+
+      <div class="stat-box">
+        <h2>1000s</h2>
+        <p>of quality repetitions every month</p>
+      </div>
+
+      <div class="stat-box">
+        <h2>1</h2>
+        <p>long-term pathway from beginner to elite</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="pathway">
+    <div class="section-header">
+      <h2>Player Pathway</h2>
+      <p>
+        Progression isn’t about skipping levels. It’s about mastering each layer before moving forward.
+      </p>
+    </div>
+
+    <div class="timeline">
+
+      <div class="timeline-step">
+        <h4>Phase 1 — Enjoyment & Confidence</h4>
+        <p>
+          Young players must enjoy the game first. Confidence on the ball creates creativity, bravery, and long-term love for training.
+        </p>
+      </div>
+
+      <div class="timeline-step">
+        <h4>Phase 2 — Technical Consistency</h4>
+        <p>
+          Strong habits are built through repetition. Clean touches, controlled passing, scanning, and movement patterns become automatic.
+        </p>
+      </div>
+
+      <div class="timeline-step">
+        <h4>Phase 3 — Tactical Awareness</h4>
+        <p>
+          Players learn spacing, timing, positioning, pressing triggers, transitions, and game understanding.
+        </p>
+      </div>
+
+      <div class="timeline-step">
+        <h4>Phase 4 — Competitive Performance</h4>
+        <p>
+          Advanced players develop composure, consistency, and intensity under pressure while refining decision-making speed.
+        </p>
+      </div>
+
+      <div class="timeline-step">
+        <h4>Phase 5 — Long-Term Excellence</h4>
+        <p>
+          The final stage focuses on maintaining elite habits, professionalism, recovery, mentality, and performance longevity.
+        </p>
+      </div>
+
+    </div>
+  </section>
+
+  <section id="mindset" class="final-cta">
+    <h2>Development takes <span>time.</span></h2>
+
+    <p>
+      The best players aren’t built overnight. They’re built through consistency, repetition, discipline, and years of intentional training.
+    </p>
+
+    <a href="#" class="cta">Start the Journey</a>
+  </section>
+
+  <footer>
+    PitchPro — Programs & Development Systems ⚽
+  </footer>
+
+  <script src="{{ url_for('static', filename='js/public-polish.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/motivational-quotes.js') }}"></script>
+</body>
+</html>

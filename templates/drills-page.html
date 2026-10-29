@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PitchPro Drills</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/public-polish.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/quote-card.css') }}">
+  <style>
+    :root {
+      --bg: #0A0A0A;
+      --card: #141414;
+      --lime: #A3FF12;
+      --text: #F5F5F5;
+      --muted: #A1A1AA;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      overflow-x: hidden;
+    }
+
+    h1,h2,h3,h4 {
+      font-family: 'Space Grotesk', sans-serif;
+      letter-spacing: -0.5px;
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    section {
+      padding: 7rem 8vw;
+    }
+
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.2rem 8vw;
+      background: rgba(10,10,10,0.88);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .logo {
+      color: var(--lime);
+      font-size: 1.5rem;
+      font-weight: 700;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      font-weight: 600;
+    }
+
+    .nav-links a {
+      position: relative;
+      color: var(--muted);
+      padding-bottom: 6px;
+      transition: color .3s ease;
+    }
+
+    .nav-links a::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      width: 100%;
+      height: 2px;
+      background: linear-gradient(90deg, var(--lime), #5EEAD4);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform .3s ease;
+    }
+
+    .nav-links a:hover {
+      color: var(--lime);
+    }
+
+    .nav-links a:hover::after {
+      transform: scaleX(1);
+    }
+
+    .hero {
+      min-height: 82vh;
+      display: grid;
+      grid-template-columns: 1.1fr 1fr;
+      gap: 4rem;
+      align-items: center;
+    }
+
+    .hero h1 {
+      font-size: clamp(3rem, 7vw, 6rem);
+      line-height: 0.95;
+      margin-bottom: 1.5rem;
+    }
+
+    .hero h1 span {
+      color: var(--lime);
+    }
+
+    .hero p {
+      color: var(--muted);
+      line-height: 1.8;
+      max-width: 620px;
+      margin-bottom: 2rem;
+    }
+
+    .hero-card {
+      background: linear-gradient(145deg, rgba(163,255,18,0.12), rgba(255,255,255,0.02));
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 28px;
+      padding: 3rem;
+      box-shadow: 0 30px 60px rgba(0,0,0,0.45);
+    }
+
+    .hero-card h3 {
+      color: var(--lime);
+      margin-bottom: 1rem;
+      font-size: 1.5rem;
+    }
+
+    .hero-card p {
+      color: var(--muted);
+      margin-bottom: 1rem;
+    }
+
+    .cta {
+      display: inline-block;
+      background: var(--lime);
+      color: #000;
+      padding: 1rem 2rem;
+      border-radius: 999px;
+      font-weight: 700;
+      transition: all .25s ease;
+    }
+
+    .cta:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 30px rgba(163,255,18,0.35);
+    }
+
+    .section-header {
+      margin-bottom: 4rem;
+      max-width: 760px;
+    }
+
+    .section-header h2 {
+      font-size: clamp(2.3rem, 5vw, 4rem);
+      margin-bottom: 1rem;
+    }
+
+    .section-header p {
+      color: var(--muted);
+      line-height: 1.8;
+    }
+
+    .drills-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 2rem;
+    }
+
+    .drill-card {
+      background: var(--card);
+      border-radius: 24px;
+      padding: 2.4rem;
+      border: 1px solid rgba(255,255,255,0.06);
+      position: relative;
+      overflow: hidden;
+      transition: transform .25s ease, border-color .25s ease, box-shadow .25s ease;
+    }
+
+    .drill-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at top right, rgba(163,255,18,0.12), transparent 45%);
+      pointer-events: none;
+    }
+
+    .drill-card:hover {
+      transform: translateY(-8px);
+      border-color: rgba(163,255,18,0.35);
+      box-shadow: 0 0 0 1px rgba(163,255,18,0.12), 0 18px 40px rgba(163,255,18,0.14);
+    }
+
+    .pill {
+      display: inline-block;
+      background: rgba(163,255,18,0.12);
+      color: var(--lime);
+      padding: 0.45rem 0.85rem;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      margin-bottom: 1.3rem;
+    }
+
+    .drill-card h3 {
+      font-size: 1.7rem;
+      margin-bottom: 1rem;
+      color: var(--lime);
+    }
+
+    .drill-card p {
+      color: var(--muted);
+      line-height: 1.8;
+      margin-bottom: 1.4rem;
+    }
+
+    .drill-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.7rem;
+      color: var(--text);
+    }
+
+    .drill-list span {
+      color: var(--muted);
+    }
+
+    .training-section {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+    }
+
+    .training-card {
+      background: var(--card);
+      border-radius: 24px;
+      padding: 2.5rem;
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .training-card h3 {
+      color: var(--lime);
+      margin-bottom: 1rem;
+      font-size: 1.6rem;
+    }
+
+    .training-card p {
+      color: var(--muted);
+      line-height: 1.8;
+    }
+
+    .routine {
+      margin-top: 4rem;
+      display: grid;
+      gap: 1.5rem;
+    }
+
+    .routine-step {
+      background: var(--card);
+      border-left: 4px solid var(--lime);
+      border-radius: 0 18px 18px 0;
+      padding: 2rem;
+    }
+
+    .routine-step h4 {
+      margin-bottom: 0.8rem;
+      font-size: 1.25rem;
+    }
+
+    .routine-step p {
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    .final-section {
+      text-align: center;
+      padding: 8rem 8vw;
+    }
+
+    .final-section h2 {
+      font-size: clamp(2.5rem, 6vw, 5rem);
+      margin-bottom: 1rem;
+    }
+
+    .final-section h2 span {
+      color: var(--lime);
+    }
+
+    .final-section p {
+      max-width: 720px;
+      margin: 0 auto 2rem;
+      color: var(--muted);
+      line-height: 1.8;
+    }
+
+    footer {
+      border-top: 1px solid rgba(255,255,255,0.08);
+      padding: 3rem 8vw;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    @media (max-width: 900px) {
+      .hero,
+      .training-section {
+        grid-template-columns: 1fr;
+      }
+
+      .hero h1 {
+        font-size: 3.8rem;
+      }
+
+      section {
+        padding: 5rem 7vw;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="navbar">
+    <div class="logo">PitchPro</div>
+
+    <div class="nav-links">
+      <a href="#drills">drills</a>
+      <a href="#technical">technical</a>
+      <a href="#sessions">sessions</a>
+      <a href="#mindset">mindset</a>
+    </div>
+  </nav>
+
+  <section class="hero">
+    <div>
+      <h1>Train with <span>purpose.</span></h1>
+
+      <p>
+        PitchPro drills are built around repetition, intensity, awareness, and real game carryover. Every drill has a reason. Every session builds habits players can actually use in matches.
+      </p>
+
+      <a href="#drills" class="cta">Explore Drills</a>
+    </div>
+
+    <div class="hero-card">
+      <h3>What our drills focus on</h3>
+
+      <p>→ Fast decision-making</p>
+      <p>→ Ball mastery under pressure</p>
+      <p>→ Scanning before receiving</p>
+      <p>→ Speed of play & movement</p>
+      <p>→ Confidence in tight spaces</p>
+      <p>→ Match-realistic situations</p>
+    </div>
+  </section>
+
+  <section id="drills">
+    <div class="section-header">
+      <h2>Core Training Drills</h2>
+
+      <p>
+        Every PitchPro drill develops a specific part of player growth. Technical quality matters, but the ability to apply technique under pressure matters even more.
+      </p>
+    </div>
+
+    <div class="drills-grid">
+
+      <div class="drill-card">
+        <div class="pill">TECHNICAL</div>
+        <h3>Ball Mastery Series</h3>
+
+        <p>
+          High repetition touch patterns designed to improve control, rhythm, balance, and confidence with both feet.
+        </p>
+
+        <div class="drill-list">
+          <div>• Inside-outside touches <span>for rhythm & control</span></div>
+          <div>• Weak foot sequences <span>every session</span></div>
+          <div>• Tight-space dribbling <span>under pressure</span></div>
+          <div>• Fast directional changes <span>with balance</span></div>
+        </div>
+      </div>
+
+      <div class="drill-card">
+        <div class="pill">AWARENESS</div>
+        <h3>Scanning & Vision</h3>
+
+        <p>
+          Players learn to check shoulders, process information quickly, and recognize passing lanes before receiving.
+        </p>
+
+        <div class="drill-list">
+          <div>• Shoulder check repetitions</div>
+          <div>• Multi-direction passing patterns</div>
+          <div>• Awareness triggers under pressure</div>
+          <div>• Quick recognition decision drills</div>
+        </div>
+      </div>
+
+      <div class="drill-card">
+        <div class="pill">INTENSITY</div>
+        <h3>Speed of Play</h3>
+
+        <p>
+          Fast-paced exercises designed to reduce hesitation and improve execution speed in game situations.
+        </p>
+
+        <div class="drill-list">
+          <div>• One-touch combinations</div>
+          <div>• Timed rondos</div>
+          <div>• Quick transition games</div>
+          <div>• Competitive pressure rounds</div>
+        </div>
+      </div>
+
+      <div class="drill-card">
+        <div class="pill">FINISHING</div>
+        <h3>Composure Finishing</h3>
+
+        <p>
+          Goal-scoring drills focused on calm decision-making, timing, and consistency rather than random shooting repetition.
+        </p>
+
+        <div class="drill-list">
+          <div>• First-time finishing</div>
+          <div>• Finishing after movement</div>
+          <div>• Angle recognition drills</div>
+          <div>• Pressure finishing scenarios</div>
+        </div>
+      </div>
+
+      <div class="drill-card">
+        <div class="pill">1V1</div>
+        <h3>Attack vs Defend</h3>
+
+        <p>
+          Players learn how to isolate defenders, attack space, recover defensively, and compete aggressively.
+        </p>
+
+        <div class="drill-list">
+          <div>• Explosive first-step attacks</div>
+          <div>• Change of direction moves</div>
+          <div>• Defensive body positioning</div>
+          <div>• Recovery sprint reactions</div>
+        </div>
+      </div>
+
+      <div class="drill-card">
+        <div class="pill">GAME IQ</div>
+        <h3>Positional Play</h3>
+
+        <p>
+          Tactical exercises designed to improve spacing, timing, movement off the ball, and understanding of team structure.
+        </p>
+
+        <div class="drill-list">
+          <div>• Passing lane recognition</div>
+          <div>• Movement between lines</div>
+          <div>• Compact defending principles</div>
+          <div>• Transition awareness</div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <section id="technical">
+    <div class="section-header">
+      <h2>Training Philosophy</h2>
+
+      <p>
+        Great players aren’t created through random drills. Training should challenge technique, awareness, confidence, and decision-making at the same time.
+      </p>
+    </div>
+
+    <div class="training-section">
+
+      <div class="training-card">
+        <h3>Train realistically</h3>
+
+        <p>
+          Drills should reflect the pressure, movement, timing, and unpredictability of real matches. Players improve faster when training feels connected to the game itself.
+        </p>
+      </div>
+
+      <div class="training-card">
+        <h3>Consistency beats shortcuts</h3>
+
+        <p>
+          Elite development comes from years of repetition and discipline. Improvement is built daily through habits, focus, and quality training intensity.
+        </p>
+      </div>
+
+    </div>
+
+    <div class="routine">
+
+      <div class="routine-step">
+        <h4>Phase 1 — Technical Warmup</h4>
+
+        <p>
+          Sessions begin with ball familiarity, coordination, activation, and controlled touches to prepare players mentally and physically.
+        </p>
+      </div>
+
+      <div class="routine-step">
+        <h4>Phase 2 — Repetition Under Pressure</h4>
+
+        <p>
+          Players execute technical actions while processing movement, defenders, timing, and awareness triggers.
+        </p>
+      </div>
+
+      <div class="routine-step">
+        <h4>Phase 3 — Competitive Game Application</h4>
+
+        <p>
+          Drills transition into small-sided games, directional play, and realistic match-speed situations.
+        </p>
+      </div>
+
+      <div class="routine-step">
+        <h4>Phase 4 — Reflection & Growth</h4>
+
+        <p>
+          Players review decision-making, consistency, mentality, and execution habits after each training block.
+        </p>
+      </div>
+
+    </div>
+  </section>
+
+  <section id="mindset" class="final-section">
+    <h2>Training creates <span>confidence.</span></h2>
+
+    <p>
+      The best players trust themselves because they’ve repeated the work thousands of times. Confidence is built through preparation.
+    </p>
+
+    <a href="#" class="cta">Start Training</a>
+  </section>
+
+  <footer>
+    PitchPro — Training Drills & Player Development ⚽
+  </footer>
+
+  <script src="{{ url_for('static', filename='js/public-polish.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/motivational-quotes.js') }}"></script>
+</body>
+</html>
