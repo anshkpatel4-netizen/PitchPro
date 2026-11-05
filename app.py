@@ -1,9 +1,13 @@
 from flask import Flask, render_template, make_response, request, jsonify
 from pathlib import Path
 import base64
+import json
 import shutil
 import subprocess
 import tempfile
+import threading
+import time
+import uuid
 import os
 
 from dotenv import load_dotenv
@@ -186,6 +190,18 @@ def apilogin():
 
 
 # =========================
+# FIREBASE CONFIG
+# =========================
+
+@app.route("/firebase-config.js")
+def firebase_config():
+    """Expose the Firebase web API key (public by design) to browser modules."""
+    key = os.environ.get("FIREBASE_API_KEY", "")
+    body = f"export const FIREBASE_API_KEY = {json.dumps(key)};\n"
+    return app.response_class(body, mimetype="application/javascript")
+
+
+# =========================
 # AI COACH API
 # =========================
 
@@ -227,10 +243,11 @@ def chat():
         role = message.get("role")
         content = message.get("content")
 
+        # The system prompt lives only on the server; ignore any the
+        # client sends so it cannot be overridden from the browser.
         if role not in [
             "user",
-            "assistant",
-            "system"
+            "assistant"
         ]:
             continue
 
@@ -278,6 +295,7 @@ You can help with:
 - Soccer terminology
 - Tactics
 - Training ideas
+- Personalized agendas built from the PitchPro Training Library
 - Confidence and mindset
 
 Give practical, age-appropriate advice.
@@ -285,6 +303,8 @@ Give practical, age-appropriate advice.
 When giving training sessions:
 
 - Organize them into clear steps.
+- Prefer the player's selected PitchPro library drills and link back
+  to those drills when a library list is provided.
 - Include realistic durations when useful.
 - Focus on technique and quality.
 - Include rest and recovery.
@@ -367,43 +387,40 @@ You are a coach, not a replacement for the player's real coach.
         }), 500
 
 
-@app.route("/api/ai-coach/video", methods=["POST"])
-def analyze_match_video():
-    """Analyze a long match upload with audio transcription and sampled frames."""
-    video = request.files.get("video")
-    if video is None or not video.filename:
-        return jsonify({"error": "Choose a match video to upload."}), 400
+# -------------------------
+# Match video jobs
+# -------------------------
+# Analysis of a 60-100 minute match takes minutes, far longer than browsers
+# and proxies keep a request open. The upload request validates the file and
+# starts a background thread, then returns a job id that the client polls.
+# Jobs live in memory, so this assumes a single server process (as with
+# app.run below); use a shared store such as Redis if you run several workers.
 
-    allowed_extensions = {"mp4", "mov", "m4v", "webm", "avi"}
-    extension = Path(video.filename).suffix.lower().lstrip(".")
-    if extension not in allowed_extensions:
-        return jsonify({"error": "Upload an MP4, MOV, M4V, WEBM, or AVI video."}), 400
+VIDEO_JOBS = {}
+VIDEO_JOBS_LOCK = threading.Lock()
+VIDEO_JOB_TTL_SECONDS = 60 * 60
 
-    if shutil.which("ffmpeg") is None or shutil.which("ffprobe") is None:
-        return jsonify({
-            "error": "Match analysis needs FFmpeg installed on the server. Install ffmpeg and ffprobe, then try again."
-        }), 503
 
-    temp_dir = tempfile.mkdtemp(prefix="pitchpro-match-")
-    input_path = Path(temp_dir) / f"match.{extension}"
+def _set_video_job(job_id, **fields):
+    with VIDEO_JOBS_LOCK:
+        VIDEO_JOBS[job_id].update(fields, updatedAt=time.time())
+
+
+def _prune_video_jobs():
+    cutoff = time.time() - VIDEO_JOB_TTL_SECONDS
+    with VIDEO_JOBS_LOCK:
+        for job_id in [j for j, job in VIDEO_JOBS.items()
+                       if job["status"] in ("done", "error") and job["updatedAt"] < cutoff]:
+            del VIDEO_JOBS[job_id]
+
+
+def _run_video_analysis(job_id, temp_dir, input_path, duration):
     audio_path = Path(temp_dir) / "match.wav"
     frames_dir = Path(temp_dir) / "frames"
     frames_dir.mkdir()
 
     try:
-        video.save(input_path)
-
-        probe = subprocess.run(
-            ["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "default=noprint_wrappers=1:nokey=1", str(input_path)],
-            check=True,
-            capture_output=True,
-            text=True,
-            timeout=60,
-        )
-        duration = float(probe.stdout.strip())
-        if duration < 60 * 60 or duration > 100 * 60:
-            return jsonify({"error": "Please upload a match between 60 and 100 minutes long."}), 400
-
+        _set_video_job(job_id, stage="Extracting audio...")
         subprocess.run(
             ["ffmpeg", "-y", "-i", str(input_path), "-vn", "-ac", "1", "-ar", "16000", str(audio_path)],
             check=True,
@@ -411,6 +428,7 @@ def analyze_match_video():
             timeout=20 * 60,
         )
 
+        _set_video_job(job_id, stage="Transcribing commentary...")
         with audio_path.open("rb") as audio_file:
             transcript_result = client.audio.transcriptions.create(
                 file=("match.wav", audio_file.read(), "audio/wav"),
@@ -419,6 +437,7 @@ def analyze_match_video():
             )
         transcript = getattr(transcript_result, "text", transcript_result) or "No spoken commentary detected."
 
+        _set_video_job(job_id, stage="Sampling match frames...")
         frame_count = 8
         interval = max(duration / (frame_count + 1), 1)
         subprocess.run(
@@ -432,6 +451,7 @@ def analyze_match_video():
             encoded = base64.b64encode(frame_path.read_bytes()).decode("ascii")
             frames.append({"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{encoded}"}})
 
+        _set_video_job(job_id, stage="Writing your match report...")
         analysis_prompt = f"""
 Analyze this soccer match for a youth player. The video is approximately {round(duration / 60)} minutes long.
 Use the sampled frames as visual context and the transcript as commentary context.
@@ -458,18 +478,107 @@ Transcript:
                 max_completion_tokens=2200,
             )
 
-        return jsonify({
-            "reply": response.choices[0].message.content,
-            "durationMinutes": round(duration / 60, 1),
-            "framesReviewed": len(frames),
-        })
+        _set_video_job(
+            job_id,
+            status="done",
+            stage="Analysis complete.",
+            result={
+                "reply": response.choices[0].message.content,
+                "durationMinutes": round(duration / 60, 1),
+                "framesReviewed": len(frames),
+            },
+        )
     except subprocess.CalledProcessError:
-        return jsonify({"error": "The video could not be decoded. Try exporting it as an MP4 (H.264 video with AAC audio)."}), 400
+        _set_video_job(job_id, status="error", error="The video could not be decoded. Try exporting it as an MP4 (H.264 video with AAC audio).")
     except Exception as error:
         print("Match video analysis error:", repr(error))
-        return jsonify({"error": "The match could not be analyzed right now. Check the video format and try again."}), 500
+        _set_video_job(job_id, status="error", error="The match could not be analyzed right now. Check the video format and try again.")
     finally:
         shutil.rmtree(temp_dir, ignore_errors=True)
+
+
+@app.route("/api/ai-coach/video", methods=["POST"])
+def analyze_match_video():
+    """Validate a match upload and start analysis in the background."""
+    video = request.files.get("video")
+    if video is None or not video.filename:
+        return jsonify({"error": "Choose a match video to upload."}), 400
+
+    allowed_extensions = {"mp4", "mov", "m4v", "webm", "avi"}
+    extension = Path(video.filename).suffix.lower().lstrip(".")
+    if extension not in allowed_extensions:
+        return jsonify({"error": "Upload an MP4, MOV, M4V, WEBM, or AVI video."}), 400
+
+    if shutil.which("ffmpeg") is None or shutil.which("ffprobe") is None:
+        return jsonify({
+            "error": "Match analysis needs FFmpeg installed on the server. Install ffmpeg and ffprobe, then try again."
+        }), 503
+
+    _prune_video_jobs()
+
+    temp_dir = tempfile.mkdtemp(prefix="pitchpro-match-")
+    input_path = Path(temp_dir) / f"match.{extension}"
+    handed_off = False
+
+    try:
+        video.save(input_path)
+
+        probe = subprocess.run(
+            ["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "default=noprint_wrappers=1:nokey=1", str(input_path)],
+            check=True,
+            capture_output=True,
+            text=True,
+            timeout=60,
+        )
+        duration = float(probe.stdout.strip())
+        if duration < 60 * 60 or duration > 100 * 60:
+            return jsonify({"error": "Please upload a match between 60 and 100 minutes long."}), 400
+
+        job_id = uuid.uuid4().hex
+        with VIDEO_JOBS_LOCK:
+            VIDEO_JOBS[job_id] = {
+                "status": "running",
+                "stage": "Queued...",
+                "result": None,
+                "error": None,
+                "updatedAt": time.time(),
+            }
+
+        threading.Thread(
+            target=_run_video_analysis,
+            args=(job_id, temp_dir, input_path, duration),
+            daemon=True,
+        ).start()
+        handed_off = True
+
+        return jsonify({"jobId": job_id, "status": "running"}), 202
+    except (subprocess.CalledProcessError, ValueError):
+        return jsonify({"error": "The video could not be decoded. Try exporting it as an MP4 (H.264 video with AAC audio)."}), 400
+    except Exception as error:
+        print("Match video upload error:", repr(error))
+        return jsonify({"error": "The match could not be analyzed right now. Check the video format and try again."}), 500
+    finally:
+        # Once the worker thread owns the files, it cleans them up.
+        if not handed_off:
+            shutil.rmtree(temp_dir, ignore_errors=True)
+
+
+@app.route("/api/ai-coach/video/<job_id>", methods=["GET"])
+def match_video_status(job_id):
+    """Report progress or the final result of a match analysis job."""
+    with VIDEO_JOBS_LOCK:
+        job = VIDEO_JOBS.get(job_id)
+        job = dict(job) if job else None
+
+    if job is None:
+        return jsonify({"error": "That analysis job was not found. It may have expired; please upload again."}), 404
+
+    payload = {"status": job["status"], "stage": job["stage"]}
+    if job["status"] == "done":
+        payload.update(job["result"])
+    elif job["status"] == "error":
+        payload["error"] = job["error"]
+    return jsonify(payload)
 
 
 # =========================

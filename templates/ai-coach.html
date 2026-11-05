@@ -813,42 +813,9 @@ function createAgenda(profile, askCoach = true) {
     }
 }
 
-const systemMessage = { role: "system", content: `
-You are PitchPro AI Coach, an AI soccer coach inside the PitchPro youth soccer training platform.
-Your job is to help young soccer players improve their soccer skills, understanding, confidence, and preparation.
-You can help with:
-- Finishing
-- First touch
-- Dribbling
-- Passing
-- Movement
-- Positioning
-- Game intelligence
-- 1v1 ability
-- Speed and agility
-- Striker training
-- Match preparation
-- Soccer rules
-- Soccer terminology
-- Tactics
-- Training ideas
-- Personalized agendas built from the PitchPro Training Library
-- Confidence and mindset
-Give practical, age-appropriate advice.
-When giving training sessions:
-- Organize them into clear steps.
-- Prefer the player's selected PitchPro library drills and link back to those drills when a library list is provided.
-- Include realistic durations when useful.
-- Focus on technique and quality.
-- Include rest and recovery.
-- Avoid extreme exercise.
-- Do not recommend restrictive eating.
-- Encourage working with the player's real coach.
-Keep answers easy to understand and useful for a young soccer player.
-If the user asks something unrelated to soccer, politely redirect the conversation toward soccer coaching.
-` };
+// The AI Coach system prompt lives on the server (app.py).
 
-let conversation = [systemMessage];
+let conversation = [];
 let currentChatId = null;
 let currentUser = null;
 let authReady = false;
@@ -959,7 +926,7 @@ async function loadChat(id) {
         if (!snap.exists()) return;
         currentChatId = id;
         const messages = snap.data().messages || [];
-        conversation = [systemMessage, ...messages];
+        conversation = [...messages];
         clearChatUI();
         if (messages.length) {
             welcome.style.display = "none";
@@ -980,7 +947,7 @@ async function deleteChat(id) {
         await deleteDoc(chatRef(id));
         if (currentChatId === id) {
             currentChatId = null;
-            conversation = [systemMessage];
+            conversation = [];
             clearChatUI();
             showNewChatMessage();
         }
@@ -993,7 +960,7 @@ async function deleteChat(id) {
 
 window.newChat = function() {
     currentChatId = null;
-    conversation = [systemMessage];
+    conversation = [];
     clearChatUI();
     showNewChatMessage();
     renderRecentChats();
@@ -1102,8 +1069,19 @@ async function uploadMatch(file) {
         const formData = new FormData();
         formData.append("video", file);
         const response = await fetch("/api/ai-coach/video", { method: "POST", body: formData });
-        const data = await response.json();
-        if (!response.ok) throw new Error(data.error || "Match analysis failed.");
+        const started = await response.json();
+        if (!response.ok) throw new Error(started.error || "Match analysis failed.");
+
+        // Analysis runs in the background on the server; poll until it finishes.
+        let data;
+        while (true) {
+            await new Promise(resolve => setTimeout(resolve, 5000));
+            const statusResponse = await fetch(`/api/ai-coach/video/${started.jobId}`);
+            data = await statusResponse.json();
+            if (!statusResponse.ok || data.status === "error") throw new Error(data.error || "Match analysis failed.");
+            if (data.status === "done") break;
+            if (data.stage) uploadStatus.textContent = `${data.stage} This may take several minutes.`;
+        }
 
         conversation.push({ role: "assistant", content: data.reply });
         typing.style.display = "none";
