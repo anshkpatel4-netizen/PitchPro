@@ -10,57 +10,13 @@ const recentChats = document.getElementById("recentChats");
    CONVERSATION
 ========================= */
 
-const systemMessage = {
-    role: "system",
-    content: `
-You are PitchPro AI Coach, an AI soccer coach inside the PitchPro
-youth soccer training platform.
-
-Your job is to help young soccer players improve their soccer skills,
-understanding, confidence, and preparation.
-
-You can help with:
-- Finishing
-- First touch
-- Dribbling
-- Passing
-- Movement
-- Positioning
-- Game intelligence
-- 1v1 ability
-- Speed and agility
-- Striker training
-- Match preparation
-- Soccer rules
-- Soccer terminology
-- Tactics
-- Training ideas
-- Confidence and mindset
-
-Give practical, age-appropriate advice.
-
-When giving training sessions:
-- Organize them into clear steps.
-- Include realistic durations when useful.
-- Focus on technique and quality.
-- Include rest and recovery.
-- Avoid extreme exercise.
-- Do not recommend restrictive eating.
-- Encourage working with the player's real coach.
-
-Keep answers easy to understand and useful for a young soccer player.
-
-If the user asks something unrelated to soccer, politely redirect
-the conversation toward soccer coaching.
-`
-};
 
 
 /* =========================
    CHAT STATE
 ========================= */
 
-let conversation = [systemMessage];
+let conversation = [];
 
 let currentChatId = null;
 
@@ -108,7 +64,7 @@ function createChat() {
 
     currentChatId = chatId;
 
-    conversation = [systemMessage];
+    conversation = [];
 
     renderRecentChats();
 
@@ -290,7 +246,6 @@ function loadChat(chatId) {
     currentChatId = chatId;
 
     conversation = [
-        systemMessage,
         ...savedChat.messages
     ];
 
@@ -330,7 +285,7 @@ function deleteChat(chatId) {
 
         currentChatId = null;
 
-        conversation = [systemMessage];
+        conversation = [];
 
         clearChatUI();
 
@@ -610,9 +565,7 @@ function newChat() {
 
     currentChatId = null;
 
-    conversation = [
-        systemMessage
-    ];
+    conversation = [];
 
     clearChatUI();
 

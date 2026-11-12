@@ -1,6 +1,6 @@
-require('dotenv').config();
-
-const apiKey = process.env.FIREBASE_API_KEY
+// The browser has no process.env, so Flask serves the key from .env
+// at /firebase-config.js (see app.py).
+import { FIREBASE_API_KEY } from "/firebase-config.js";
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
 
@@ -32,7 +32,7 @@ import {
 
 
 const firebaseConfig = {
-  apiKey: apiKey,
+  apiKey: FIREBASE_API_KEY,
   authDomain: "pitchpro-22318.firebaseapp.com",
   projectId: "pitchpro-22318",
   storageBucket: "pitchpro-22318.firebasestorage.app",
