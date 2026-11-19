@@ -27,7 +27,7 @@ document.getElementById("loginBtn").addEventListener("click", async () => {
 
     await setDoc(doc(db, "users", credential.user.uid), { role }, { merge: true });
 
-    window.location.href = "/dashboard";
+    window.location.href = "dashboard.html";
 
   } catch (error) {
 
@@ -74,7 +74,7 @@ document.getElementById("google-btn").addEventListener("click", async () => {
       await updateDoc(ref, { role });
     }
 
-    window.location.href = "/dashboard";
+    window.location.href = "dashboard.html";
 
   } catch (error) {
 
