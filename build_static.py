@@ -50,6 +50,26 @@ TEMPLATE_OUTPUTS = {
     "team-hub.html": "team.html",
 }
 
+NOT_FOUND_PAGE = """<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>PitchPro</title></head>
+<body><p>Loading PitchPro…</p>
+<script>
+  const routes = {
+    'programs': 'programs.html', 'dashboard': 'dashboard.html',
+    'drills': 'drills.html', 'foundation': 'foundation.html',
+    'drills-library': 'drills-library.html', 'tips': 'tips.html',
+    'about': 'about.html', 'get-started': 'get-started.html',
+    'customize': 'customize.html', 'signup': 'signup.html',
+    'login': 'login.html', 'ai-coach': 'ai-coach.html',
+    'tactical-coach': 'tactical-coach.html', 'team': 'team.html'
+  };
+  const path = window.location.pathname.replace(/\\/$/, '');
+  const route = path.substring(path.lastIndexOf('/') + 1);
+  const target = routes[route] || (route.startsWith('drill-') ? route + '.html' : 'index.html');
+  window.location.replace(path.substring(0, path.lastIndexOf('/') + 1) + target + window.location.search);
+</script></body></html>
+"""
+
 
 def static_url(filename: str) -> str:
     return "static/" + filename.strip()
@@ -139,6 +159,7 @@ def build() -> None:
     # Flask expressions, so export it in place after rewriting those expressions.
     homepage = ROOT / "index.html"
     homepage.write_text(replace_flask_expressions(homepage.read_text()))
+    (ROOT / "404.html").write_text(NOT_FOUND_PAGE)
 
     for slug, drill in read_drills().items():
         (ROOT / f"drill-{slug}.html").write_text(render_drill_detail(slug, drill))
