@@ -98,7 +98,7 @@ body .dropdown-toggle{position:relative;transition:color .2s,background .2s}
 body .nav-links a:hover,
 body .dropdown-toggle:hover{color:#fff;background:rgba(163,255,18,.08)}
 body .nav-links>a:after,
-body .dropdown-toggle:after{content:"";position:absolute;left:.9rem;right:.9rem;bottom:2px;height:2px;border-radius:2px;background:linear-gradient(90deg,#A3FF12,#5EEAD4);box-shadow:none;transform:scaleX(0);transition:transform .25s}
+body .dropdown-toggle:after{content:"";position:absolute;left:.9rem;right:.9rem;bottom:2px;height:2px;border-radius:2px;background:#A3FF12;box-shadow:0 0 10px #A3FF12;transform:scaleX(0);transition:transform .25s}
 body .nav-links>a:hover:after,
 body .dropdown-toggle:hover:after{transform:scaleX(1)}
 body .dropdown-menu a:after{display:none}
