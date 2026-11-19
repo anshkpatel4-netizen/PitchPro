@@ -85,6 +85,10 @@ body:after{width:520px;height:520px;right:-200px;top:28%;background:radial-gradi
 .navbar .nav-links a:hover,.navbar .nav-item:hover{color:#f8fafc!important;text-shadow:2px 0 #22d3ee,-2px 0 #a855f7;animation:pp-glitch .34s steps(2,end) infinite}
 .navbar .nav-links a:after,.navbar .nav-item:after{content:"";position:absolute;left:0;right:0;bottom:4px;height:1px;background:linear-gradient(90deg,#a3ff12,#22d3ee,#a855f7);transform:scaleX(0);transform-origin:left;transition:transform .25s ease;box-shadow:0 0 8px rgba(34,211,238,.8)}
 .navbar .nav-links a:hover:after,.navbar .nav-item:hover:after{transform:scaleX(1)}
+
+/* Restore the original navigation hover treatment. */
+.navbar .nav-links a:hover,.navbar .nav-item:hover{transform:none;color:#fff!important;background:rgba(163,255,18,.08)!important;text-shadow:none!important;animation:none!important}
+.navbar .nav-links a:after,.navbar .nav-item:after{background:#a3ff12;box-shadow:none}
 @keyframes pp-glitch{0%,100%{transform:translate(0)}25%{transform:translate(1px,-1px)}50%{transform:translate(-1px,1px)}75%{transform:translate(1px,0)}}
 @keyframes pp-nav-flow{to{background-position:220% 0}}
 .home-hero-copy{display:flex!important;min-height:300px!important;align-items:center;justify-content:center;flex-direction:column;text-align:left;padding:2rem 2.5rem;background-image:none!important;background:radial-gradient(circle at 18% 20%,rgba(163,255,18,.14),transparent 28%),radial-gradient(circle at 82% 80%,rgba(168,85,247,.18),transparent 34%),linear-gradient(145deg,rgba(13,31,39,.92),rgba(24,14,47,.9))!important;border:1px solid rgba(94,234,212,.3)!important;border-radius:26px;box-shadow:0 0 42px rgba(37,99,235,.12),inset 0 0 52px rgba(168,85,247,.08)!important}
