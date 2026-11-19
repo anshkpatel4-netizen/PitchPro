@@ -163,7 +163,7 @@ document.getElementById("signupBtn").addEventListener("click", async () => {
   createdAt: new Date()
 });
 
-    window.location.href = "/ai-coach?agenda=1";
+    window.location.href = "ai-coach.html?agenda=1";
     
   } catch (error) {
     alert(error.message);
