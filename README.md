@@ -5,7 +5,7 @@
 
 PitchPro combines structured training programs, an interactive drills library, player progression, tactical development, and AI-powered coaching into one platform.
 
-The goal is simple: help soccer players train smarter, improve consistently, and reach their full potential.
+The goal is simple: help soccer players train smarter, improve consistently, and reach their full potential. 
 
 ---
 
