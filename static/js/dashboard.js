@@ -20,7 +20,7 @@ function getRank(level) {
 onAuthStateChanged(auth, async (user) => {
 
   if (!user) {
-    window.location.href = "/login";
+    window.location.href = "login.html";
     return;
   }
 
@@ -204,6 +204,6 @@ document
 
     await signOut(auth);
 
-    window.location.href = "/login";
+    window.location.href = "login.html";
 
   });
