@@ -2,7 +2,7 @@
 ### Train. Improve. Grow.
 
 **A personalized soccer development platform built for the next generation of players.**
-
+   
 PitchPro combines structured training programs, an interactive drills library, player progression, tactical development, and AI-powered coaching into one platform.
 
 The goal is simple: help soccer players train smarter, improve consistently, and reach their full potential. 
